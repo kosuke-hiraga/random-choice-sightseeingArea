@@ -6,38 +6,47 @@ import { styled as st } from "@mui/system";
 // import Typography from '@mui/material/Typography';
 // import { Typography } from "@mui/material";
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+// import Typography from '@mui/material/Typography';
+import { P } from "../Atoms/Typography";
+import { Typography } from "@mui/material";
 
 const TitleWrapper = styled.div`
-background-color: yellow;
+    background-color: yellow;
 `
 
-// const TitleWrapper = st.div`
-//     /* background-color: yellow; */
-// `
-
-const Title = styled.p`
-    text-align: center;
-`
-const Title2 = st(Typography)`
+const Title = styled.div`
     text-align: center;
 `
 
-
-const SubTitle = styled.p`
+const SubTitle = styled.div`
     text-align: center;
+
+`
+// const titleSX = {
+//     :hover {
+//         color: red;
+//     }
+// }
+
+const TitleSX2 = styled.p`
+    :hover{
+        color: red;
+    }
 `
 
-const Explanation = styled.p`
+const Explanation = styled.div`
     text-align: center;
 `
 
 const ImgWrapper = styled.div`
-width: 1000px;
+    width: 500px;
+    height: 100px;
     display: flex;
 `
 
 const Img = styled.img`
+    width: 100px;
+    height: 100px;
     
 `
 
@@ -54,7 +63,17 @@ const StyledButton = st(Button)`
     background-color: #1e1e2e;
 `
 
-
+const BackImg = styled.div`
+    /* background-image: url("https://cdn-mapple.net/Normal/%E5%8C%97%E6%B5%B7%E9%81%93/1000918_20220118-5.jpg"); */
+    background-size: auto;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 1;
+`
+const Body = styled.div`
+    width: 90%;
+    margin: 0 auto;
+`
 
 
 const Test = () => {
@@ -63,36 +82,41 @@ const Test = () => {
 
     return (
         <>
-            <TitleWrapper>
-                <Title>{props.title}</Title>
-                <Title2 variant="body2">{props.title}</Title2>
-                <Title2 variant="caption">{props.title}</Title2>
-                <Title2 variant="inherit">{props.title}</Title2>
-                <Title2 variant="overline">{props.title}</Title2>
-                <Title2 variant="subtitle1">{props.title}</Title2>
-                <Title2 variant="subtitle2">{props.title}</Title2>
-                <Title2 variant="string">{props.title}</Title2>
-
-                <SubTitle>{props.subTitle}</SubTitle>
-                <Typography
-
-                >
-                    unti
-
-                </Typography>
-            </TitleWrapper>
-            <ImgWrapper >
-                {props.imgs.map((img, index) => (
-                    <Img alt={props.title} src={img} key={index}></Img>
-                ))}
-            </ImgWrapper>
-            <Explanation>{props.explanation}</Explanation>
-            <SightseeingInfoWrapper>
-                <SightseeingInfo_address>{props.address}</SightseeingInfo_address>
-                <SightseeingInfo_access>{props.access}</SightseeingInfo_access>
-                <SightseeingInfo_price>{props.price}</SightseeingInfo_price>
-            </SightseeingInfoWrapper>
-
+            <Body>
+                <BackImg>
+                    <TitleWrapper>
+                        {/* <Title sx={titleSX}> */}
+                        <Title sx={{
+                            ":hover": {
+                                content: '"ok"'
+                            }
+                        }}>
+                            <Typography sx={{
+                                ":hover": {
+                                    content: '"ok"'
+                                }
+                            }}>unti</Typography>
+                            <P>{props.title}</P>
+                        </Title>
+                        <SubTitle>
+                            <P>{props.subTitle}</P>
+                        </SubTitle>
+                    </TitleWrapper>
+                    <ImgWrapper >
+                        {props.imgs.map((img, index) => (
+                            <Img alt={props.title} src={img} key={index}></Img>
+                        ))}
+                    </ImgWrapper>
+                    <Explanation>
+                        <P>{props.explanation}</P>
+                    </Explanation>
+                    <SightseeingInfoWrapper>
+                        <SightseeingInfo_address>{props.address}</SightseeingInfo_address>
+                        <SightseeingInfo_access>{props.access}</SightseeingInfo_access>
+                        <SightseeingInfo_price>{props.price}</SightseeingInfo_price>
+                    </SightseeingInfoWrapper>
+                </BackImg>
+            </Body>
         </>
     )
 }

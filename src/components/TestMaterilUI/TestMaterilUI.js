@@ -3,17 +3,23 @@ import React from "react"
 import styled from 'styled-components'
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import { testData } from "../../TestData/testData"
+import { style } from "@mui/system"
 
-const Wrapper = styled.div`
+const DataWrap = styled.div`
+    display: flex;
+`
+
+const SightseeingData = styled.div`
     width: 500px;
     background-color: blue;
-    display: flex;
+    display: flex; 
     flex-direction: column;
     border-radius: 50px;
     overflow: hidden;
     /* border: solid 1px;; */
     box-shadow: 4px 5px 1px #f5f5f5;
     /* box-shadow: 1px 1px 1px 1px ; */
+    margin: 0px 10px;
 `
 const Img = styled.img`
     /* width: 80%; */
@@ -38,18 +44,29 @@ const TestMaterialUI = () => {
     return (
         <>
             {/* <h1>TestMaterialUI</h1> */}
+            <DataWrap>
+                <SightseeingData onClick={() => navigate("./test", { state: testData })}>
+                    {/* <Link to={"/test"}> */}
+                    <Img src={"https://cdn-mapple.net/Normal/%E5%8C%97%E6%B5%B7%E9%81%93/1000918_00031.jpg"}></Img>
+                    <TitleWrapper>
+                        <TitleText>
+                            白い恋人パーク
+                        </TitleText>
+                    </TitleWrapper>
+                    {/* </Link> */}
 
-            <Wrapper onClick={() => navigate("./test", { state: testData })}>
-                {/* <Link to={"/test"}> */}
-                <Img src={"https://cdn-mapple.net/Normal/%E5%8C%97%E6%B5%B7%E9%81%93/1000918_00031.jpg"}></Img>
-                <TitleWrapper>
-                    <TitleText>
-                        白い恋人パーク
-                    </TitleText>
-                </TitleWrapper>
-                {/* </Link> */}
-            </Wrapper>
+                </SightseeingData>
 
+                <SightseeingData onClick={() => navigate("./test2", { state: testData })}>
+                    <Img src={"https://cdn-mapple.net/Normal/%E5%8C%97%E6%B5%B7%E9%81%93/1000918_00031.jpg"}></Img>
+                    <TitleWrapper>
+                        <TitleText>
+                            白い恋人パーク2
+                        </TitleText>
+                    </TitleWrapper>
+
+                </SightseeingData>
+            </DataWrap>
         </>
     )
 }

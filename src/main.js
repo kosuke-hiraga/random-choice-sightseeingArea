@@ -3,6 +3,7 @@ import React from "react"
 import SightseeingData from "./components/ShighseeingData/ShighseeingData";
 import TestMaterialUI from "./components/TestMaterilUI/TestMaterilUI"
 import Test from "./components/Test/Test"
+import Test2 from "./components/Test2/Test2"
 
 import {
     // BrowserRouter as Router,
@@ -27,6 +28,7 @@ const main = () => {
                 <Route exact path='/getFirebase' element={<SightseeingData />} />
                 <Route exact path='/' element={<TestMaterialUI />} />
                 <Route exact path='/test' element={<Test />} />
+                <Route exact path='/test2' element={<Test2 />} />
             </Routes>
         </BrowserRouter>
     );

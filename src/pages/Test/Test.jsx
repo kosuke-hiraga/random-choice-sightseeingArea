@@ -7,7 +7,7 @@ import { styled as st } from "@mui/system";
 // import { Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 // import Typography from '@mui/material/Typography';
-import { P } from "../Atoms/Typography";
+import { P } from "../../components/Atoms/Typography";
 import { Typography } from "@mui/material";
 
 const TitleWrapper = styled.div`

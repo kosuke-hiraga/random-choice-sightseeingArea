@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { db } from './../../firebase/firebase'
+import { db } from '../../firebase/firebase'
 import { collection, documentId, getDocs, query, where } from 'firebase/firestore';
 import { useGetSightseeingData } from "../../hooks/hooks";
 import { Slider } from "@mui/material";

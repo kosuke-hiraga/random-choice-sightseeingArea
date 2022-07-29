@@ -1,9 +1,9 @@
 import React from "react"
 // import { db } from '../firebase/firebase.js'
-import SightseeingData from "./components/ShighseeingData/ShighseeingData";
+// import GetFirebaseData from "./components/get firebase data/GetFirebaseData";
 import TestMaterialUI from "./components/TestMaterilUI/TestMaterilUI"
-import Test from "./components/Test/Test"
-import Test2 from "./components/Test2/Test2"
+import Test from "./pages/Test/Test"
+import SightseeingData from "./pages/SightseeingData"
 
 import {
     // BrowserRouter as Router,
@@ -15,10 +15,6 @@ import {
 
 
 const main = () => {
-
-    console.log("load main.js");
-
-
     return (
         <BrowserRouter>
             <Routes>
@@ -28,7 +24,7 @@ const main = () => {
                 <Route exact path='/getFirebase' element={<SightseeingData />} />
                 <Route exact path='/' element={<TestMaterialUI />} />
                 <Route exact path='/test' element={<Test />} />
-                <Route exact path='/test2' element={<Test2 />} />
+                <Route exact path='/test2' element={<SightseeingData />} />
             </Routes>
         </BrowserRouter>
     );

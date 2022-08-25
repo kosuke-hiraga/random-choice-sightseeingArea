@@ -1,7 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from 'styled-components'
 import ShightseeingInfoBody from "./body";
 import ShightseeingInfoTitle from "./title";
+import { ShightseeingData } from "../../types/SightseeingData"
 
 const ShightseeingInfoBodyWrapper = styled.div`
     margin-top: 50px;
@@ -12,21 +13,23 @@ const Body = styled.div`
     margin: 0 auto;   
 `
 
-export type ShigtseeingData = {
-    title: string,
-    subTitle: string,
-    explanation: string,
-    imgs: Array<string> | Array<undefined>,
-    address: string,
-    area: string,
-    access: string,
-    price: string,
-    createAt?: object,
-    updateAt?: object
-}
+
+
+// function unti(){
+//     useLocation().search
+// }
 
 const SightseeingData = () => {
-    const props: ShigtseeingData = useLocation().state as ShigtseeingData;
+    const navigate = useNavigate();
+    const props: ShightseeingData = useLocation().state as ShightseeingData;
+    console.log(props);
+    console.log(useLocation());
+
+    window.addEventListener("popstate", () => {
+        console.log("popstate");
+        navigate("/", { state: props })
+    });
+    // window.addEventListener("popstate", () => console.log("tete"));
 
     return (
         <Body>

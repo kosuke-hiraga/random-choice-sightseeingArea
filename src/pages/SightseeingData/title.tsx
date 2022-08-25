@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import { P } from "../../components/Atoms/Typography";
 import Device from "../../mediaQuary/config";
-import { ShigtseeingData } from "./index"
+// import { ShigtseeingData } from "./index"
+import { ShightseeingData } from "../../types/SightseeingData"
 
 const TitleWrapper = styled.div`
     margin-top: 30px;
@@ -22,7 +23,7 @@ const SubTitle = styled.div`
     margin: 30px auto 0;
 `
 
-const ShightseeingInfoTitle: React.FC<ShigtseeingData> = (props) => {
+const ShightseeingInfoTitle: React.FC<ShightseeingData> = (props) => {
     return (
         <TitleWrapper>
             <Title>

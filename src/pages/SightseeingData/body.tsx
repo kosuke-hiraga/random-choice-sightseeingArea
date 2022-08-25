@@ -7,7 +7,8 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import CurrencyYenIcon from '@mui/icons-material/CurrencyYen';
 import Device, { ViewportState } from "../../mediaQuary/config";
 import { P } from "../../components/Atoms/Typography";
-import { ShigtseeingData } from "./index"
+// import { ShigtseeingData } from "./index"
+import { ShightseeingData } from "../../types/SightseeingData"
 
 let IconSize: "small" | "inherit" | "large" | "medium" | undefined;
 switch (ViewportState) {
@@ -39,8 +40,8 @@ const Hole = styled.div`
 const InfoWrapper = styled.div`
     width: 100%;
     display: grid;
-    grid-template-rows: auto;
-    grid-template-columns: auto;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-gap: 10px 20px;
     @media ${Device.mobile}, ${Device.tablet}{
         grid-template-rows: 1fr 1fr 1fr 1fr;
@@ -161,7 +162,7 @@ const SightseeingInfo_access = st(SightseeingInfo_base)`
 const SightseeingInfo_price = st(SightseeingInfo_base)`
 `
 
-const ShightseeingInfoBody: React.FC<ShigtseeingData> = (props) => {
+const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
     //画像がない場合、画像を差し替える
     for (let i = 0; i < 2; i++) {
         if (typeof props.imgs[i] === 'undefined') {

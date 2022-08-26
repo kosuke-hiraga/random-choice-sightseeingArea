@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { db } from './../firebase/firebase'
+// import { db } from './../firebase/firebase'
+import { db } from './../firebase/firebase_TestENV'
 import { collection, documentId, getDocs, query, where } from 'firebase/firestore';
 
 // export const useGetSightseeingData = 

@@ -6,27 +6,45 @@ import { ShightseeingData } from "../../types/SightseeingData"
 import React from "react"
 import { testData } from "../../TestData/testData";
 import Device, { ViewportState } from "../../mediaQuary/config";
+import TOKYOIMG from "../../img/東京タワートリミング.jpg";
 
 const Header = styled.div`
-    width: 70%;
-    height: 200px;
+    width: 100%;
+    height: 100px;
     border-radius: 42px;
-    box-shadow:  5px 5px 3px #cfd0d6,
-                -5px -5px 3px #fdfeff;
-    margin: 30px auto;
+    /* box-shadow:  5px 5px 3px #cfd0d6,
+                -5px -5px 3px #fdfeff; */
+    margin: 0px auto;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-
     @media ${Device.mobile}{
         flex-direction: column-reverse;
     }
 
 `
 
+const Title = styled.div`
+width: 100%;
+height: 300px;
+`
+
+const Img = styled.img`
+    width: 100%;
+    height: 100%;
+`
+
+
+const SearchButtonWrap = styled.div`
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+`
+
 const SearchButton = st(Button)`
-    // width: 150px;
+    width: 150px;
     width: 400px;
     height: 50px;
     border-radius: 42px;
@@ -40,8 +58,11 @@ const SearchButton = st(Button)`
 `
 
 const SliderWrap = styled.div`
+    width: 50%;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: space-between;
+    /* flex-direction: column; */
 `
 
 const SliderToSetNumberOfSightseeingSpots = st(Slider)(({ theme }) => ({
@@ -96,14 +117,20 @@ const SearchArea: React.FC<{
 
     return (
         <>
+            <Title>
+                {/* <img src="../../img/東京タワートリミング.jpg"></img> */}
+                {/* <img src={TOKYOIMG}></img> */}
+                <Img src={TOKYOIMG}></Img>
+            </Title>
             <Header>
-                <SearchButton
-                    onMouseDown={() => getShigthseeingData(sliderValue)}>
-                    <P>Search</P>
-                </SearchButton>
+                <SearchButtonWrap>
+                    <SearchButton
+                        onMouseDown={() => getShigthseeingData(sliderValue)}>
+                        <P>Search</P>
+                    </SearchButton>
+                </SearchButtonWrap>
 
                 <SliderWrap>
-                    <P fontSize={"large"}>{`acquired ${sliderValue} data`}</P>
                     <SliderToSetNumberOfSightseeingSpots
                         defaultValue={defaultSliderNumber}
                         valueLabelDisplay="auto"
@@ -114,6 +141,7 @@ const SearchArea: React.FC<{
                         disableSwap={true}
                         onChangeCommitted={updateSliderValue}
                     ></SliderToSetNumberOfSightseeingSpots>
+                    <P fontSize={"large"}>{`${sliderValue} 件を表示`}</P>
                 </SliderWrap>
             </Header>
         </>

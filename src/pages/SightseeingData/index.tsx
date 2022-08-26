@@ -5,19 +5,15 @@ import ShightseeingInfoTitle from "./title";
 import { ShightseeingData } from "../../types/SightseeingData"
 
 const ShightseeingInfoBodyWrapper = styled.div`
-    margin-top: 50px;
+    margin-top: 20px;
+    height: 100%;
 `
 
 const Body = styled.div`
     width: 95%;
-    margin: 0 auto;   
+    margin: 0 auto;
+    height: 100%;
 `
-
-
-
-// function unti(){
-//     useLocation().search
-// }
 
 const SightseeingData = () => {
     const navigate = useNavigate();

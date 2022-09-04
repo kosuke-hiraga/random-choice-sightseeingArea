@@ -1,115 +1,109 @@
 import styled from "styled-components"
 import { P } from "../../components/Atoms/Typography"
-import { Slider, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { styled as st } from "@mui/system";
 import { ShightseeingData } from "../../types/SightseeingData"
 import React from "react"
 import { testData } from "../../TestData/testData";
 import Device, { ViewportState } from "../../mediaQuary/config";
-import TOKYOIMG from "../../img/東京タワートリミング.jpg";
 
-const Header = styled.div`
+
+const Layout = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* background-color: red; */
+    justify-content: space-evenly;
+    height: 100%;
     width: 100%;
-    height: 100px;
-    border-radius: 42px;
-    /* box-shadow:  5px 5px 3px #cfd0d6,
-                -5px -5px 3px #fdfeff; */
-    margin: 0px auto;
-    position: relative;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 0.5fr 1fr;
+    grid-template-areas: 
+    "title"
+    "explanation"
+    "search"
+    ;
+`
+const Title = styled.div`
+    grid-area: title;
+    width: 90%;
+    margin: 0 auto ;
+    /* height: 50%;
+    height: 50%; */
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    @media ${Device.mobile}{
-        flex-direction: column-reverse;
+    p{
+        color: #e6e7ee;
+        text-shadow: 2px 6px 0px rgba(0, 0, 0, 0.42);
+        font-size: calc(2rem + ((1vw - 3.20px) * 7));
+        font-weight: bold;
     }
-
 `
-
-const Title = styled.div`
-width: 100%;
-height: 300px;
+const Explanation = styled.div`
+    grid-area: explanation;
+    /* width: 100%;
+    height: 50%; */
+    width: 90%;
+    margin: 0 auto ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    p{
+        color: #e6e7ee;
+        text-shadow: 2px 4px 0px rgba(0, 0, 0, 0.42);
+        font-size: calc(1rem + ((1vw - 3.20px) * 3));
+        font-weight: bold;
+    }
 `
-
-const Img = styled.img`
-    width: 100%;
-    height: 100%;
-`
-
 
 const SearchButtonWrap = styled.div`
-    width: 50%;
+    grid-area: search;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
+    
 `
 
 const SearchButton = st(Button)`
-    width: 150px;
-    width: 400px;
-    height: 50px;
-    border-radius: 42px;
-    box-shadow:  5px 5px 3px #cfd0d6,
-                -5px -5px 3px #fdfeff;
-    
+    background-color: #e6e7ee;
+    width: 200px;
+    height: 200px;
+    border-radius: 200px;
+    box-shadow:  3px 3px 3px #cfd0d6,
+                -3px -3px 3px #fdfeff;
     &:active{
-        box-shadow: inset 5px 5px 4px #cfd0d6,
-                    inset -5px -5px 4px #fdfeff;
+        box-shadow: inset 3px 3px 4px #cfd0d6,
+                    inset -3px -3px 4px #fdfeff;
     }
 `
 
-const SliderWrap = styled.div`
-    width: 50%;
-    display: flex;
-    align-items: center;
-    flex-direction: space-between;
-    /* flex-direction: column; */
-`
 
-const SliderToSetNumberOfSightseeingSpots = st(Slider)(({ theme }) => ({
-    width: "200px",
-    color: "#e6e7ee",
-    "& .MuiSlider-rail": {
-        color: "#0f0f10",
-        opacity: "0.2",
-        boxShadow: "1px 1px 1px #cfd0d6, -1px -1px 1px #fdfeff",
-    },
-    "& .MuiSlider-track": {
-        color: "#0f0f10",
-        opacity: "0.5",
-        boxShadow: "1px 3px 1px #cfd0d6, -1px -3px 1px #fdfeff",
-
-    },
-    "& .MuiSlider-thumb": {
-        boxShadow: "2px 2px 1px #cfd0d6, -2px -2px 1px #fdfeff",
-        height: "100%",
-        width: "15%"
-    }
-}));
-
-
-const SearchArea: React.FC<{
-    setSliderValue: React.Dispatch<React.SetStateAction<number>>;
-    sliderValue: number;
+type SearchButtonComponent = {
     setSightseeingData: React.Dispatch<React.SetStateAction<ShightseeingData[]>>
     sightseeingData: ShightseeingData[];
-    defaultSliderNumber: number;
-}> = ({ setSliderValue, sliderValue, setSightseeingData, sightseeingData, defaultSliderNumber }) => {
+    isBlack: boolean;
+    setIsBlack: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-    function updateSliderValue(e: Event | React.SyntheticEvent<Element, Event>, value: number | number[]) {
-        console.log(value);
-        if (typeof value === "object") {
-            return;
-        }
-        setSliderValue(value);
-    }
 
+const HeaderTitle: React.FC<SearchButtonComponent> = ({
+    setSightseeingData,
+    setIsBlack,
+    isBlack
+}) => {
     function getShigthseeingData(num: number) {
         let returnArray: Array<ShightseeingData> = [];
         for (let i = 0; i < num; i++) {
             returnArray.push(testData[i])
         }
-        // console.log(returnArray);
         setSightseeingData(returnArray);
+        setIsBlack(!isBlack);
 
         sessionStorage.setItem("previousData_at_MainMenu", JSON.stringify(returnArray));
         // return returnArray;
@@ -117,36 +111,18 @@ const SearchArea: React.FC<{
 
     return (
         <>
-            <Title>
-                {/* <img src="../../img/東京タワートリミング.jpg"></img> */}
-                {/* <img src={TOKYOIMG}></img> */}
-                <Img src={TOKYOIMG}></Img>
-            </Title>
-            <Header>
+            <Layout>
+                <Title><P>さぁ、どこに行く?</P></Title>
+                <Explanation>
+                    <P>下のボタンを押せば、</P>
+                    <P>素敵な場所が貴方を誘う..</P>
+                </Explanation>
                 <SearchButtonWrap>
-                    <SearchButton
-                        onMouseDown={() => getShigthseeingData(sliderValue)}>
-                        <P>Search</P>
-                    </SearchButton>
+                    <SearchButton onClick={() => getShigthseeingData(3)}><P>今すぐ検索!</P></SearchButton>
                 </SearchButtonWrap>
-
-                <SliderWrap>
-                    <SliderToSetNumberOfSightseeingSpots
-                        defaultValue={defaultSliderNumber}
-                        valueLabelDisplay="auto"
-                        step={1}
-                        marks
-                        min={1}
-                        max={10}
-                        disableSwap={true}
-                        onChangeCommitted={updateSliderValue}
-                    ></SliderToSetNumberOfSightseeingSpots>
-                    <P fontSize={"large"}>{`${sliderValue} 件を表示`}</P>
-                </SliderWrap>
-            </Header>
+            </Layout>
         </>
-
     )
 }
 
-export default SearchArea;
+export default HeaderTitle;

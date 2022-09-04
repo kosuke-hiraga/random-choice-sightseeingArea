@@ -6,7 +6,7 @@ export const P = st(Typography)`
     // font-family: "Nunito Sans", "sans-serif";
     font-family: "Roboto" "Nunito Sans", "sans-serif";
     
-    color: #423ace;
+    // color: #423ace;
     // color: #31344b;
     // font-size: 25px;
     

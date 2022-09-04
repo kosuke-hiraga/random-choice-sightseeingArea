@@ -2,7 +2,6 @@ import React from "react"
 // import { db } from '../firebase/firebase.js'
 import GetFirebaseData from "./pages/get firebase data/GetFirebaseData";
 import MainMenu from "./pages/MainMenu"
-// import Test from "./pages/Test/Test"
 import SightseeingData from "./pages/SightseeingData"
 
 import {
@@ -23,8 +22,9 @@ const main = () => {
 
                 <Route exact path='/getFirebase' element={<GetFirebaseData />} />
                 <Route exact path='/' element={<MainMenu />} />
-                {/* <Route exact path='/test' element={<Test />} /> */}
                 <Route exact path='/SightseeingData/*' element={<SightseeingData />} />
+
+
             </Routes>
         </BrowserRouter>
     );

@@ -13,8 +13,17 @@ const SightseeingImg = styled.img`
     height: 100%;
 `
 const Circle = styled.div`
-    width: 300px;
-    height: 300px;
+    /* width: 300px; */
+    /* height: 300px; */
+
+    //別画面に表示する版
+    /* width: 230px;
+    height: 230px; */
+    width: 150px;
+    height: 150px;
+
+    
+
     /* border: #cfd0d6 solid 5px; */
     border-top: #cfd0d6 solid 2px;
     border-left: #cfd0d6 solid 1px;
@@ -22,8 +31,10 @@ const Circle = styled.div`
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow:  1px 4px 3px #cfd0d6,
-                -2px -2px 3px #fdfeff;
+    /* box-shadow:  1px 4px 3px #cfd0d6,
+                -2px -2px 3px #fdfeff; */
+    box-shadow:  2px 3px 5px #707070,
+                 -2px -2px 5px #ffffff;
     margin: 10px;
 
     :hover{
@@ -39,13 +50,17 @@ const Circle = styled.div`
 `
 const SightseeingTitle = styled.div`
     height: 30%;
-    background-color: #e6e7ee;
+    /* background-color: #e6e7ee; */
+    background-color: rgba(230, 231, 238, 0.4);
     text-align: center;
     
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    p{
+        font-size: 9px;
+    }
 `
 const SightseeingCard: React.FC<ShightseeingData> = (props) => {
     const navigate = useNavigate();
@@ -57,7 +72,10 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
     }
 
     return (
-        <Circle onClick={() => navigate(`./SightseeingData/${props.id}`, { state: props })} >
+        <Circle onClick={() => {
+            sessionStorage.setItem("isBlack", "true")
+            navigate(`./SightseeingData/${props.id}`, { state: props })
+        }} >
             <SightseeingImgWrapper>
                 <SightseeingImg src={props.imgs[0]}></SightseeingImg>
             </SightseeingImgWrapper>

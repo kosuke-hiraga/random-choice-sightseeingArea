@@ -1,8 +1,12 @@
 import styled from 'styled-components'
 import { P } from '../../components/Atoms/Typography'
 import FirstIMG from "./../../img/hitachi_seaside_park.jpeg"
+import { ShightseeingData } from "../../types/SightseeingData"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 
 const CardWrap = styled.div`
+    max-width: 200px;
+    max-height: 80px;
     display: flex;
     border-bottom: 1px solid;
 `
@@ -26,21 +30,29 @@ const Title = styled.div`
     text-align: center;
     display: grid;
     place-items:  center left;
+    p{
+        font-size: 12px;
+    }
 `
 
-const PR = () => {
+const SightseeingCard: React.FC<ShightseeingData> = (props) => {
+    const navigate = useNavigate();
 
     return (
-        <CardWrap>
+        <CardWrap
+            onClick={() => {
+                sessionStorage.setItem("isBlack", "true")
+                navigate(`./SightseeingData/${props.id}`, { state: props })
+            }}>
             <ImgWrap>
                 <Img src={FirstIMG}></Img>
             </ImgWrap>
             <Title>
-                <P>title</P>
+                <P>{props.title}</P>
             </Title>
         </CardWrap>
     )
 
 }
 
-export default PR;
+export default SightseeingCard;

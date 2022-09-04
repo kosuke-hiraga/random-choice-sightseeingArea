@@ -15,43 +15,42 @@ switch (ViewportState) {
     case "mobile":
         IconSize = "small"; break;
     case "tablet":
-        IconSize = "small"; break;
+        IconSize = "large"; break;
     case "laptop":
         IconSize = "large"; break;
 }
 
 const Hole = styled.div`
-    /* width: 75px;
-    height: 75px; */
     width: 60px;
     height: 60px;
     border-radius: 400px;
-    box-shadow:  3px 3px 3px #cfd0d6,
-                -3px -3px 3px #fdfeff;
+    box-shadow:  3px 4px 4px #707070,
+                 -1px -1px 4px #ffffff;
     display: grid;
-    place-items: center;    
-    color: #31344b;
+    place-items: center; 
+    background-color: rgba(230, 231, 238, 0.4);
 
     @media ${Device.mobile}, ${Device.tablet}{
         width: 50px;
         height: 50px;
     }
 `
-
-
 const InfoWrapper = styled.div`
+    overflow: scroll;
+    
+    scrollbar-width: none; //firefox用
+    &::-webkit-scrollbar { 
+        display: none; //Chrome・Safari・Microsoft Edge用
+    }
     width: 100%;
-    height: 450px;
-    /* height: 100%; */
+    /* height: 450px; */
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     /* grid-gap: 10px 20px; */
     @media ${Device.mobile}, ${Device.tablet}{
-        /* grid-template: 
-        "img"
-        "sightseeingInfo"; */
         grid-template-columns: unset;
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
     }
 `
 
@@ -62,28 +61,22 @@ const ImgWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 95%;
     height: 100%;
-    /* box-shadow: 10px 15px 22px 5px rgba(0, 0, 0, 0.2), */
-                /* 0 0 2px rgba(0, 0, 0, 0.15); 周囲の影 */
     border-radius: 40px;
-    background: #e6e7ee;
-    box-shadow: inset 5px 5px 4px #cfd0d6,
-                inset -5px -5px 4px #fdfeff;
-    
     margin: 0 auto;
     @media ${Device.mobile}, ${Device.tablet}{
-        width: 80%;
-        height: 80%;
+        width: 90%;
+        height: 90%;
+        grid-row: 2;
+        grid-column:1;
     }
     
 `
-
 const Img = styled.img`
     width: 95%;
     height: 95%;
     max-height: 500px;
-    border-radius: 100px;
     display: block;
     border-radius: 40px;
 `
@@ -92,20 +85,15 @@ const SightseeingInfoWrapper = styled.div`
     grid-area: sightseeingInfo;
     grid-row: 1;
     grid-column:2;
-
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     height: 100%;
     padding: 0px 30px;
-    /* background: #e6e7ee; */
-    /* box-shadow: inset 5px 5px 4px #cfd0d6,
-                inset -5px -5px 4px #fdfeff; */
     @media ${Device.mobile}, ${Device.tablet}{
-        /* grid-row: unset;
-        grid-column: unset; */
-    grid-row: 2;
-    grid-column:1;
+        grid-row: 3;
+        grid-column:1;
+        gap: 30px;
     }
 
 `
@@ -113,6 +101,7 @@ const SightseeingInfoWrapper = styled.div`
 const SightseeingInfo_base = styled.div`
     display: flex;
     align-items: center;
+    /* text-shadow: 1px 1px 1px rgba(230, 231, 238. 0.1); */
     @media ${Device.tablet}, ${Device.laptop}{
         > :nth-Child(2){
             display: flex;
@@ -124,44 +113,32 @@ const SightseeingInfo_base = styled.div`
     }
 `
 
-const Explanation = styled.div`
-    position: relative;
-    text-align: center;
-    grid-area: explanation;
-    /* grid-row: 1;
-    grid-column:2; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    height: 100%;
-    padding: 0 30px;
-    border-radius: 46px;
-    background: #e6e7ee;
-    /* box-shadow: inset 5px 5px 4px #cfd0d6,
-                inset -5px -5px 4px #fdfeff; */
-    ${Hole} {
-        top: 10%;
-        @media ${Device.mobile}{
-            top: 5%;
-        }
-    }
-    @media ${Device.mobile}, ${Device.tablet}{
-        grid-row: unset;
-        grid-column: unset;
-    }
+const Explanation = st(SightseeingInfo_base)`
 `
-
-const Explanation2 = st(SightseeingInfo_base)`
-    // grid-area: explanation;
-`
-
 const SightseeingInfo_address = st(SightseeingInfo_base)`
 `
 const SightseeingInfo_access = st(SightseeingInfo_base)`
 `
 const SightseeingInfo_price = st(SightseeingInfo_base)`
 `
+
+const SubTitle = styled.div`
+    grid-row: 1;
+    grid-column:1;
+    width: 95%;
+    margin: 10px auto 10px;
+    font-weight: bold;
+    /* margin-bottom: 15px; */
+    p{
+        /* width: 95%; */
+        font-size: 14px;
+    }
+`
+const SubTitleSX = {
+    // borderBottom: "1px solid"
+    borderBottom: window.matchMedia(Device.laptop).matches ? "1px solid" : "",
+}
+
 
 const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
     //画像がない場合、画像を差し替える
@@ -173,24 +150,23 @@ const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
 
     return (
         <InfoWrapper>
+            {ViewportState === "laptop" ? "" :
+                <SubTitle>
+                    <P variant="inherit" sx={SubTitleSX}>{props.subTitle}</P>
+                    {/* <P variant="inherit" sx={SubTitleSX}>wwwww</P> */}
+                </SubTitle>
+            }
             <ImgWrapper >
                 <Img alt={props.imgs[0]} src={props.imgs[0]}></Img>
             </ImgWrapper>
-            {/* <ImgWrapper >
-                <Img alt={props.imgs[0]} src={props.imgs[0]}></Img>
-            </ImgWrapper> */}
-            {/* <Explanation>
-                <Hole><LightbulbIcon fontSize={IconSize} /></Hole>
-                <P>{props.explanation}</P>
-            </Explanation> */}
             <SightseeingInfoWrapper>
-                <Explanation2>
+                <Explanation>
                     {ViewportState === "mobile" ? "" : <Hole><LightbulbIcon fontSize={IconSize} /></Hole>}
                     <div>
-                        <P>{"【解説】"}</P>
+                        <P >{"【解説】"}</P>
                         <P>{props.explanation}</P>
                     </div>
-                </Explanation2>
+                </Explanation>
                 <SightseeingInfo_address>
                     {ViewportState === "mobile" ? "" : <Hole><PlaceIcon fontSize={IconSize} /></Hole>}
                     {/* {window.matchMedia(Device.mobile).matches ? "" : <Hole><PlaceIcon fontSize={IconSize} /></Hole>} */}

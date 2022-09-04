@@ -1,31 +1,65 @@
 import React, { useState } from "react"
+import { Button } from "@mui/material";
 import styled from 'styled-components'
-import SightseeingCard from "./body"
-import SearchArea from './header'
+import { styled as st } from "@mui/system";
+import { P } from "../../components/Atoms/Typography";
+import BackgroundImg from "./backgrondImg";
+import Header from "./header";
+// import SearchButton from "./body";
+import Result from "./result"
+import { toBoolean } from "../../util/util"
 import { ShightseeingData } from "../../types/SightseeingData"
-import Device from "../../mediaQuary/config";
+
+import SightseeingCard from "./body"
+import SightseeingCard_Mobile from "./body_moblie"
+import { ViewportState } from "../../mediaQuary/config";
 
 
-const SightseeingDataPosition = styled.div`
+// const Layout = styled.div`
+//     width: 100%;
+//     height: 100%;
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     display: grid;
+//     grid-template-areas: 
+//         "title"
+//         "search"
+//     ;
+//     z-index: 10;
+// `
+const HeaderPosition = styled.div`
     width: 100%;
-    margin: 0 auto;
-    /* background-color: gray; */
-    @media ${Device.mobile}{
-        width: 100%;
-    }
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    /* grid-area: title; */
+`
+
+// const ButtonPosition = styled.div`
+//     grid-area: search;
+// `
+const ChangeBlack = styled.div`
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
 `
 
 const SightseeingDataList = styled.div`
-    display: flex;
+    /* display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 50px; //test用
+    justify-content: center; */
+    /* justify-content: left; */
+    /* margin-top: 50px; //test用 */
 `
+
 
 const MainMenu = () => {
     const DefaultSliderNum: number = 1;
     const [sliderValue, setSliderValue] = useState<number>(DefaultSliderNum);
-    // const [sightseeingData, setSightseeingData] = useState<Array<ShightseeingData>>([]);
 
     //初回時は何も表示せず、二回目以降はセッションストレージに保存されている前回の検索結果を表示する
     let PreviousData_at_MainMenu = sessionStorage.getItem("previousData_at_MainMenu") ?? [] as ShightseeingData[];
@@ -34,32 +68,55 @@ const MainMenu = () => {
     }
     const [sightseeingData, setSightseeingData] = useState<Array<ShightseeingData>>(PreviousData_at_MainMenu);
 
+    let isBlackSession = toBoolean(sessionStorage.getItem("isBlack"));
+    if (typeof isBlackSession === "string") {
+        isBlackSession = toBoolean(isBlackSession);
+    }
+
+    const [isBlack, setIsBlack] = useState(isBlackSession);
+
+
     const useStates = {
         sliderValue: sliderValue,
         setSliderValue: setSliderValue,
         sightseeingData: sightseeingData,
-        setSightseeingData: setSightseeingData
-    }
+        setSightseeingData: setSightseeingData,
+        isBlack: isBlack,
+        setIsBlack: setIsBlack
+    };
 
-    // console.log(sightseeingData);
 
     return (
         <>
-            {/* <SearchArea setSliderValue={setSliderValue} sliderValue={sliderValue} defaultSliderNumber={DefaultSliderNum} /> */}
-            <SearchArea {...useStates} defaultSliderNumber={DefaultSliderNum} />
-            <SightseeingDataPosition>
-                <SightseeingDataList>
+            <HeaderPosition>
+                <Header {...useStates} />
+            </HeaderPosition>
+
+            {isBlack === true ?
+                <Result isBlack={isBlack} setIsBlack={setIsBlack} setSightseeingData={setSightseeingData} >
                     {
                         sightseeingData.map((sightseeingInfo, index) => {
-                            // pops.map((sightseeingInfo, index) => {
-                            return <SightseeingCard {...sightseeingInfo} key={index} />
+                            return (
+                                ViewportState === "mobile" ?
+                                    <SightseeingCard_Mobile {...sightseeingInfo} key={index} /> :
+                                    <SightseeingCard {...sightseeingInfo} key={index} />
+                            )
+
                         })
                     }
-                </SightseeingDataList>
-            </SightseeingDataPosition>
+                </Result>
+                : ""}
+            <ChangeBlack>
+                <button onClick={() => setIsBlack(!isBlack)}> 黒切り替え</button>
+            </ChangeBlack>
+
+            {/* 背景画像は下記コンポーネントが表示 */}
+            <BackgroundImg />
         </>
     )
 }
 
 
 export default MainMenu;
+
+

@@ -1,4 +1,4 @@
-export type ShightseeingData = {
+export type favoriteList = {
     id: string,
     title: string,
     subTitle: string,
@@ -8,10 +8,6 @@ export type ShightseeingData = {
     area: string,
     access: string,
     price: string,
-    isFavorited?: boolean,
     createAt?: object,
     updateAt?: object,
-    setState?: React.Dispatch<React.SetStateAction<number>>
-    // setState?: [number, React.Dispatch<React.SetStateAction<number>>]
-    // key?: number
 }

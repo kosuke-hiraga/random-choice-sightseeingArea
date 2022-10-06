@@ -14,6 +14,9 @@ import SightseeingCard from "./body"
 import SightseeingCard_Mobile from "./body_moblie"
 import { ViewportState } from "../../mediaQuary/config";
 
+import Menu from "../Menu";
+import { update_SessionStorage_favrorite, update_firestoreFavorite } from "../../firebase/logic";
+
 
 // const Layout = styled.div`
 //     width: 100%;
@@ -35,6 +38,7 @@ const HeaderPosition = styled.div`
     top: 0;
     left: 0;
     z-index: 5;
+    /* background-color: green; */
     /* grid-area: title; */
 `
 
@@ -74,6 +78,7 @@ const MainMenu = () => {
     }
 
     const [isBlack, setIsBlack] = useState(isBlackSession);
+    const [isMenu, setIsMenu] = useState(false);
 
 
     const useStates = {
@@ -82,8 +87,11 @@ const MainMenu = () => {
         sightseeingData: sightseeingData,
         setSightseeingData: setSightseeingData,
         isBlack: isBlack,
-        setIsBlack: setIsBlack
+        setIsBlack: setIsBlack,
+        isMenu: isMenu,
+        setIsMenu: setIsMenu
     };
+
 
 
     return (
@@ -95,19 +103,23 @@ const MainMenu = () => {
             {isBlack === true ?
                 <Result isBlack={isBlack} setIsBlack={setIsBlack} setSightseeingData={setSightseeingData} >
                     {
-                        sightseeingData.map((sightseeingInfo, index) => {
+                        sightseeingData.map((sightseeingInfo) => {
                             return (
                                 ViewportState === "mobile" ?
-                                    <SightseeingCard_Mobile {...sightseeingInfo} key={index} /> :
-                                    <SightseeingCard {...sightseeingInfo} key={index} />
+                                    <SightseeingCard_Mobile {...sightseeingInfo} key={sightseeingInfo.id} /> :
+                                    <SightseeingCard {...sightseeingInfo} key={sightseeingInfo.id} />
                             )
-
                         })
                     }
                 </Result>
                 : ""}
             <ChangeBlack>
                 <button onClick={() => setIsBlack(!isBlack)}> 黒切り替え</button>
+            </ChangeBlack>
+            <ChangeBlack>
+                {/* <button onClick={() => setIsMenu(!isMenu)}> メニュー</button> */}
+                {/* <button onClick={() => addSessionStorage_favrorite("ee")}> addFavrorite</button> */}
+                {/* <button onClick={() => addFirebase_favorite("nJMhRN2XbPaWmqCHMoR9lRnrpy03")}> addFavrorite</button> */}
             </ChangeBlack>
 
             {/* 背景画像は下記コンポーネントが表示 */}

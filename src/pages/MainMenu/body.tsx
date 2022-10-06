@@ -2,6 +2,14 @@ import styled from "styled-components"
 import { P } from "../../components/Atoms/Typography"
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import { ShightseeingData } from "../../types/SightseeingData"
+import FavoriteIcon from "../../components/Atoms/FavoriteIcon"
+import { useContext } from "react"
+import { AuthContext } from "../../state/LoginProvider"
+import { isFavorite } from "../../util/util"
+import {
+    update_SessionStorage_favrorite,
+    update_firestoreFavorite
+} from "../../firebase/logic"
 
 const SightseeingImgWrapper = styled.div`
     width: 100%;
@@ -12,13 +20,11 @@ const SightseeingImg = styled.img`
     width: 100%;
     height: 100%;
 `
-const Circle = styled.div`
-    /* width: 300px; */
-    /* height: 300px; */
 
-    //別画面に表示する版
-    /* width: 230px;
-    height: 230px; */
+const CircleWrap = styled.div`
+    position: relative;
+`
+const Circle = styled.div`
     width: 150px;
     height: 150px;
 
@@ -62,29 +68,52 @@ const SightseeingTitle = styled.div`
         font-size: 9px;
     }
 `
+const FavoriteIconPosition = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 20px;
+`
+
+
 const SightseeingCard: React.FC<ShightseeingData> = (props) => {
     const navigate = useNavigate();
+    const Auth = useContext(AuthContext);
     //行ごとに文字の収納スペースが異なるので、適切な文字数に加工する
     const Paragraph = {
         first: props.title.substring(0, 13),
         second: props.title.substring(13, 24),
         third: props.title.substring(24, 32)
     }
+    // console.log(`観光地　レンダリング +  ${props.id}`);
 
     return (
-        <Circle onClick={() => {
-            sessionStorage.setItem("isBlack", "true")
-            navigate(`./SightseeingData/${props.id}`, { state: props })
-        }} >
-            <SightseeingImgWrapper>
-                <SightseeingImg src={props.imgs[0]}></SightseeingImg>
-            </SightseeingImgWrapper>
-            <SightseeingTitle>
-                <P>{Paragraph.first}</P>
-                <P>{Paragraph.second}</P>
-                <P>{Paragraph.third}</P>
-            </SightseeingTitle>
-        </Circle>
+        <CircleWrap>
+            <Circle onClick={() => {
+                sessionStorage.setItem("isBlack", "true")
+                navigate(`./SightseeingData/${props.id}`, { state: props })
+            }} >
+                <SightseeingImgWrapper>
+                    <SightseeingImg src={props.imgs[0]}></SightseeingImg>
+                </SightseeingImgWrapper>
+                <SightseeingTitle>
+
+                    <P>{Paragraph.first}</P>
+                    <P>{Paragraph.second}</P>
+                    <P>{Paragraph.third}</P>
+                </SightseeingTitle>
+            </Circle>
+            {Auth.isSighIn() === true ?
+                <FavoriteIconPosition>
+                    <FavoriteIcon
+                        favorite={isFavorite(props.id)}
+                        sightseeingID={props.id}
+                        onClick={(becomeFavorite: boolean) => {
+                            update_SessionStorage_favrorite(props.id, becomeFavorite);
+                            update_firestoreFavorite(Auth.currentUser);
+                        }} />
+                </FavoriteIconPosition>
+                : ""}
+        </CircleWrap>
     )
 }
 

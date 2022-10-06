@@ -7,6 +7,8 @@ import { getShigthseeingData } from "../../hooks/testHooks";
 import { ShightseeingData } from "../../types/SightseeingData"
 import ReplayIcon from '@mui/icons-material/Replay';
 import CloseIcon from '@mui/icons-material/Close';
+import Device from "../../mediaQuary/config";
+import { GetSightseeingData } from "../../firebase/logic";
 
 
 
@@ -54,16 +56,12 @@ const ResultAreaWrap = styled.div`
 const ResultArea = styled.div`
     width: 100%;
     height: 98%;
-    /* background-color: red; */
     overflow: scroll;
     display: flex;
     flex-wrap: wrap;
     align-content: start;
-    /* justify-content: start; */
     justify-content: center;
     border-radius: 40px;
-    /* box-shadow:  inset 1px 4px 3px #cfd0d6,
-                 inset -2px -2px 3px #fdfeff; */
     box-shadow: inset 3px 4px 6px #707070,
                 inset -1px -1px 4px #ffffff;
     scrollbar-width: none; //firefox用
@@ -75,14 +73,18 @@ const ResultArea = styled.div`
     
     //検索結果同士の間隔を少し開ける
     > :nth-child(n){
-        margin: 10px 20px;
+        margin: 10px 10px;
     }
-    @media (max-width: 380px){
-        justify-content: center;
+    @media ${Device.mobile}{
+        display: grid;
     }
-    //561pxまで折り返しポイントまで辿り着かない為
-    @media (max-width: 562px){
-        justify-content: center;
+    @media (max-width: 520px){
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        place-items: center;
+    }
+    @media (min-width: 521px) and (max-width: 600px){
+        grid-template-columns: repeat(auto-fit, 220px);
     }
 `
 
@@ -130,13 +132,9 @@ const result: FC<{
     setSightseeingData: React.Dispatch<React.SetStateAction<ShightseeingData[]>>
 }> = ({ isBlack, setIsBlack, children, setSightseeingData }) => {
 
-    function reSearch() {
-        getShigthseeingData(Math.ceil(Math.random() * 10));
-        let getData = sessionStorage.getItem("previousData_at_MainMenu") ?? [] as ShightseeingData[];
-        if (typeof getData !== "object") {
-            getData = JSON.parse(getData) as Array<ShightseeingData>;
-        }
-        console.log(getData);
+    async function reSearch() {
+        let getData = await GetSightseeingData(Math.ceil(Math.random() * 10));
+        // console.log(getData);
         setSightseeingData(getData);
     }
 
@@ -151,6 +149,7 @@ const result: FC<{
                 </ResultAreaWrap>
                 <SearchButtonWrap>
                     <SearchButton onClick={() => reSearch()}>
+                        {/* <SearchButton> */}
                         <ReplayIcon />
                         <P>再検索</P>
                     </SearchButton>

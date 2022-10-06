@@ -1,6 +1,11 @@
 import styled from 'styled-components'
 import { style, styled as st } from "@mui/system";
+// import NO_IMAGE from "../../img/NO_IMAGE.png";
+
 import NO_IMAGE from "../../img/NO_IMAGE.png";
+// const NO_IMAGE = require("../../img/NO_IMAGE.png")
+
+
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import PlaceIcon from '@mui/icons-material/Place';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';

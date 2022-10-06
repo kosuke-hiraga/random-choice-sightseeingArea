@@ -1,11 +1,12 @@
 import { useState } from "react";
-// import { db } from './../firebase/firebase'
-import { db } from './../firebase/firebase_TestENV'
+import { db, auth } from './../firebase/firebase'
+// import { db } from './../firebase/firebase_TestENV'
 import { collection, documentId, getDocs, query, where } from 'firebase/firestore';
 
 // export const useGetSightseeingData = 
 
 export async function useGetSightseeingData(numberOfRecordsYouWant) {
+    // console.log(auth);
     console.log(numberOfRecordsYouWant);
     console.log("excute");
     const refCollection = collection(db, "sightseeingData");
@@ -43,4 +44,9 @@ export async function useGetSightseeingData(numberOfRecordsYouWant) {
     console.log(sightseeingData);
 
     return sightseeingData;
+}
+
+
+export function useTest() {
+    return "test";
 }

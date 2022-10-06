@@ -1,40 +1,54 @@
-// import { initializeApp } from "firebase/app";
-// import { getAuth } from "firebase/auth"
-// import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
 
-// import {
-//     assertFails,
-//     assertSucceeds,
-//     initializeTestEnvironment,
-//     initializeTestApp,
-//     RulesTestEnvironment,
-// } from "@firebase/rules-unit-testing";
+import { getAuth, connectAuthEmulator } from "firebase/auth"
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
-// // const firebaseConfig = {
-// //     apiKey: "AIzaSyDUDnxe2RcTMd6m6r_PaZGhOxjofi1xv1c",
-// //     authDomain: "random-choice-sightseeing-area.firebaseapp.com",
-// //     projectId: "random-choice-sightseeing-area",
-// //     storageBucket: "random-choice-sightseeing-area.appspot.com",
-// //     messagingSenderId: "278204816867",
-// //     appId: "1:278204816867:web:0d6af1b06a51ab484b14d6"
-// // };
-
-// const firebaseConfig = async () => {
-//     await initializeTestEnvironment({
-//         projectId: "random choice sightseeing area",
-//         firestore: {
-//             host: 'localhost',
-//             port: 8088
-//         }
-//     });
-// };
+import {
+    assertFails,
+    assertSucceeds,
+    initializeTestEnvironment,
+    RulesTestEnvironment,
+    authenticatedContext
+} from "@firebase/rules-unit-testing";
 
 
-// // Initialize Firebase
+const fs = require('fs');
+// import * as fs from "fs"
 
-// // const app = initializeTestApp(firebaseConfig);
+const firebaseConfig = {
+    apiKey: "AIzaSyCg6av84x0r5_vWzuGX8wC0Ayjo3fpPOWI",
+    authDomain: "sightseeing-area-dev.firebaseapp.com",
+    projectId: "sightseeing-area-dev",
+    storageBucket: "sightseeing-area-dev.appspot.com",
+    messagingSenderId: "1051991428796",
+    appId: "1:1051991428796:web:2d395431b30ff619994ab9",
+    measurementId: "G-560CJVWY6Y"
+};
+const app = initializeApp(firebaseConfig);
 
-// // export const app = initializeApp(firebaseConfig);
-// // export const auth = getAuth();
-// // export const db = getFirestore(app);
-// export const db = getFirestore(firebaseConfig);
+// 認証付きFirestoreクライアントの取得
+// export function getFirestoreWithAuth() {
+async function getTestEnv() {
+    const time = new Date;
+    return await initializeTestEnvironment({
+        // projectId: time.getTime(),
+        projectId: "sightseeing-area-dev",
+        firestore: {
+            auth: { uid: "H1UCHFKqD3WuBnMlYeka302pNYw2", email: "test@gmail.com" },
+            rules: fs.readFileSync('./../firestore.rules', 'utf8'),
+            // rules: fs.readFileSync('./../firestore.rules', 'utf8'),
+            port: 8080,
+            host: "localhost"
+        }
+    })
+}
+
+// ローカルで実行中の場合は、エミュレータを使う
+let auth = getAuth();
+connectAuthEmulator(auth, 'http://localhost:9099')
+
+let db = getFirestore()
+connectFirestoreEmulator(db, 'localhost', 8080);
+
+
+export { db, auth, getTestEnv }

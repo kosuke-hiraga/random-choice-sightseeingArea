@@ -9,7 +9,7 @@ const Device = {
 export const ViewportState = getViewportState();
 
 
-function getViewportState() {
+export function getViewportState() {
     let viewportState;
     if (window.matchMedia(Device.mobile).matches) {
         viewportState = "mobile";
@@ -18,12 +18,11 @@ function getViewportState() {
     } else if (window.matchMedia(Device.laptop).matches) {
         viewportState = "laptop";
     } else {
-        viewportState = "mobile";
+        // viewportState = "mobile";
+        console.log(Device.laptop);
+        viewportState = "pp2";
     }
     return viewportState
 }
 
-
-
-
-export default Device
+export default Device;

@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import ShightseeingInfoBody from "./body";
 import ShightseeingInfoTitle from "./title";
 import { ShightseeingData } from "../../types/SightseeingData"
-// import Result from "./result";
 import BackgroundImg from "./backgrondImg";
 
 const BodyPosition = styled.div`
@@ -35,17 +34,7 @@ const ShightseeingInfoBodyPosition = styled.div`
 
 
 const SightseeingData = () => {
-    const navigate = useNavigate();
     const props: ShightseeingData = useLocation().state as ShightseeingData;
-    console.log(props);
-    console.log(props.imgs);
-    console.log(useLocation());
-
-    window.addEventListener("popstate", () => {
-        console.log("popstate");
-        navigate("/test", { state: props })
-    });
-    // window.addEventListener("popstate", () => console.log("tete"));
 
     return (
         <>
@@ -57,7 +46,6 @@ const SightseeingData = () => {
                     <ShightseeingInfoBodyPosition>
                         <ShightseeingInfoBody {...props} />
                     </ShightseeingInfoBodyPosition>
-                    {/* <Result /> */}
                 </Body>
             </BodyPosition>
 

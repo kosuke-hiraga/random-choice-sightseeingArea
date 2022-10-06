@@ -15,7 +15,7 @@ const BB = st(ButtonMUI)`
 
 export default {
     // title: "Test",
-    title: 'MaterialUI/Typography/',
+    title: 'MaterialUI/Typography',
     // component: BB,
     // component: ButtonMUI,
     component: Typography,

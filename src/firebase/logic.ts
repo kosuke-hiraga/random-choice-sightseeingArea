@@ -1,5 +1,5 @@
 // import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "firebase/auth"
 import {
     getDocs,
     addDoc,
@@ -21,69 +21,136 @@ import { ShightseeingData } from "../types/SightseeingData";
 import { db, auth } from './firebase'
 // import { db as db2, getTestEnv } from "./firebase_TestENV"
 // import { db, auth, getTestEnv } from "./firebase_TestENV"
-
+import { User } from "../types/User";
 
 import { getSessionStorage } from "../util/util"
+import { favoriteList } from "../types/FavoriteList";
 
-function addUser(id: string, email: string) {
-    const refCollection = collection(db, "users");
-    addDoc(refCollection, {
+
+
+/**
+ * @desc 新規登録時のアクション。firestoreにユーザーとお気に入りリストの初期設定を行う
+ * @param id 認証されたユーザーのId
+ * @param name 登録したユーザー名
+ * @param email 登録したEmailアドレス
+ */
+async function addUser(id: string, name: string, email: string) {
+    const ref_users = collection(db, "users");
+    const UserInitializationData: User = {
         id: id,
-        name: "test",
+        name: name,
         email: email,
-        latestLogin: serverTimestamp(),
+        admin: false,
+        latestSignIn: serverTimestamp(),
+        latestSignOut: serverTimestamp(),
         createdAt: serverTimestamp(),
         updateAt: serverTimestamp()
-    })
+    }
+    addDoc(ref_users, UserInitializationData)
         .then(() => {
             console.log("addUser success");
         })
         .catch((err) => {
             console.log(err);
+        });
+
+    //ユーザー初期登録時、空のお気に入りリストを設定しないと情報取得時エラーになる為
+    //ここで初期設定を行う
+    const ref_favoriteList = collection(db, "favoriteList");
+    const favoriteInitializationData: favoriteList = {
+        user_id: id,
+        favorites: [],
+        createAt: serverTimestamp(),
+        updateAt: serverTimestamp()
+    }
+    addDoc(ref_favoriteList, favoriteInitializationData)
+        .then(() => {
+            console.log("addfavoriteList success");
         })
+        .catch((err) => {
+            console.log(err);
+        });
 }
 
-export function signUp(email: string, password: string) {
+
+/**
+ * @desc firebaseにサインアップする。
+ * @param email サインアップに使用するemail
+ * @param password サインアップに使用するpassword
+ * @return isSignin サインアップ成功=true 失敗=false
+ */
+export function signUp(email: string, name: string, password: string) {
     createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
             console.log("signUp success!!");
 
             const user = userCredential.user;
-            addUser(user.uid, email);
+
+            //何かの間違いでユーザーコレクションに保存できなかった場合、整合性を保つ為に認証情報を削除する
+            await addUser(user.uid, name, email).catch(() => {
+                if (auth.currentUser !== null) {
+                    console.log("削除");
+                    deleteUser(auth.currentUser);
+                }
+                alert("ユーザー登録に不具合が発生しました。お手数ですがお問合せください");
+            });
         })
         .catch((error) => {
-            console.log(error);
-        })
+            switch (error.code) {
+                case "auth/operation-not-allowed":
+                    alert("利用中止になっているメールドレスです"); break;
+                case "auth/weak-password":
+                    alert("パスワードは6文字以上"); break;
+                case "auth/email-already-in-use":
+                    alert("既に使用されているEmailアドレス"); break;
+                case "auth/invalid-email":
+                    alert("Emailアドレスの書式に不備があります"); break;
+                default:
+                    alert("原因不明のエラーです"); break;
+            }
+        });
 }
 
 
-export async function signIn(email: string, password: string) {
+/**
+ * @desc firebaseにサインインする。サインインに失敗した場合、画面にアラートを出力する。
+ * @param email サインインに使用するemail
+ * @param password ログインに使用するpassword
+ * @return isSignin サインイン成功=true 失敗=false
+ */
+export async function signIn(email: string, password: string): Promise<boolean> {
     let uid = "";
+    let isSignIn = false;
     await signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
             console.log("signIn success!!");
             uid = userCredential.user.uid;
+            const user = await getUserData(uid);
+            const favoriteData = await getFavoriteData(uid);
 
+            const favoriteIds: Array<string> = favoriteData.map((favorite: ShightseeingData) => {
+                return favorite.id
+            });
+            //ログイン時にお気に入りに登録している観光地IDをセッションストレージに保持する
+            sessionStorage.setItem("favorites", JSON.stringify(favoriteIds));
+            isSignIn = true;
         })
         .catch((error) => {
             console.log(error);
+            switch (error.code) {
+                case "auth/invalid-email":
+                    alert("Emailアドレスの書式に不備があります"); break;
+                case "auth/user-not-found":
+                    alert("存在しないユーザーです"); break;
+                case "auth/user-disabled":
+                    alert("利用停止中のユーザーです"); break;
+                case "auth/wrong-password":
+                    alert("パスワードが間違っています"); break;
+                default:
+                    alert("原因不明のエラーです"); break;
+            }
         });
-
-    const user = await getUserData(uid);
-    const favoriteData = await getFavoriteData(uid);
-    console.log(favoriteData);
-
-
-    // const favoriteIds: Array<string> = favoriteData.favorites.map((favorite: ShightseeingData) => {
-    const favoriteIds: Array<string> = favoriteData.map((favorite: ShightseeingData) => {
-        return favorite.id
-    });
-
-
-    //ログイン時にお気に入りに登録している観光地IDをセッションストレージに保持する
-    // sessionStorage.setItem("favorites", JSON.stringify(favorites.favorites));
-    sessionStorage.setItem("favorites", JSON.stringify(favoriteIds));
-
+    return isSignIn;
 }
 
 
@@ -91,6 +158,7 @@ export function logOut() {
     signOut(auth)
         .then((userCredential) => {
             console.log("signOut success!!");
+            sessionStorage.clear();
         })
         .catch((error) => {
             console.log(error);
@@ -151,7 +219,13 @@ export async function GetSightseeingData(numberOfRecordsYouWant: number) {
 
 
 
-
+/**
+ * @desc  ユーザーIDからユーザー情報を取得する
+ * @param uid ログインしているユーザーID
+ * @return userData  検索にヒットした１番目のユーザー情報(重複しない前提)
+ * @caution レコードが0件の可能性があるので、留意する事
+ * 
+ */
 export async function getUserData(uid: string) {
     const ref_users = collection(db, "users");
     const doc_users = await getDocs(query(ref_users, where(documentId(), "==", uid)));
@@ -232,8 +306,6 @@ export function update_SessionStorage_favrorite(targetFavroriteId: string, becom
  * @param sessionFavoriteIds セッションストレージから取得したお気に入り観光地のID達
  * @returns 
  */
-// export async function addFirebase_favorite(user_id: string, addFavroriteId: string) {
-// export async function update_firestoreFavorite(currentUser_id: string, sessionFavoriteIds: Array<string>) {
 export async function update_firestoreFavorite(currentUser_id: string) {
     const ref_favoriteList = collection(db, "favoriteList");
     const q = query(ref_favoriteList, where("user_id", "==", currentUser_id));
@@ -271,7 +343,6 @@ export async function update_firestoreFavorite(currentUser_id: string) {
         console.log(favoriteData.favorites);
         await updateDoc(ref_favoriteData, {
             favorites: favoriteData.favorites,
-            unti: "remove"
         });
         console.log("remove finish");
     }
@@ -294,7 +365,6 @@ export async function update_firestoreFavorite(currentUser_id: string) {
 
         await updateDoc(ref_favoriteData, {
             favorites: favoriteData.favorites.concat(newFavoriteData),
-            unti: "add"
         });
         console.log("add finish");
     }

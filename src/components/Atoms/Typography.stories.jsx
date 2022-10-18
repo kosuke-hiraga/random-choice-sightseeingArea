@@ -1,25 +1,12 @@
 import React from "react";
-// import { useLocation } from "react-router-dom";
-// import styled from 'styled-components'
 import { styled as st } from "@mui/system";
 import ButtonMUI from '@mui/material/Button';
-// import Test from './Test';
-// import Test from '../TestStory/TestStory';
 import Typography from '@mui/material/Typography';
 
 
-const BB = st(ButtonMUI)`
-    background-color: blue;
-`
-
-
 export default {
-    // title: "Test",
-    title: 'MaterialUI/Typography',
-    // component: BB,
-    // component: ButtonMUI,
+    title: 'Atoms/Typography',
     component: Typography,
-
 }
 
 const showString = "Test string";

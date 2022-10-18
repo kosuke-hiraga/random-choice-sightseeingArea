@@ -11,22 +11,6 @@ import { useGetSightseeingData } from "../src/hooks/hooks"
 
 let testEnv;
 
-// beforeAll(async () => {
-//     testEnv = await initializeTestEnvironment({
-//         projectId: "random choice sightseeing area",
-//         firestore: {
-//             host: 'localhost',
-//             port: 8088
-//         }
-//     });
-// });
-
-// afterAll(async () => {
-//     //テスト終了後テスト環境で作成されたすべての RulesTestContexts を破棄します。
-//     await testEnv.cleanup()
-// })
-
-
 
 
 describe("firebase データ取得テスト", () => {

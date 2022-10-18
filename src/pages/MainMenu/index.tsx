@@ -79,6 +79,9 @@ const MainMenu = () => {
 
     const [isBlack, setIsBlack] = useState(isBlackSession);
     const [isMenu, setIsMenu] = useState(false);
+    const [isSignUpScreen, setIsSignUpScreen] = useState(false);
+    const [isSignInScreen, setIsSignInScreen] = useState(false);
+
 
 
     const useStates = {
@@ -89,7 +92,11 @@ const MainMenu = () => {
         isBlack: isBlack,
         setIsBlack: setIsBlack,
         isMenu: isMenu,
-        setIsMenu: setIsMenu
+        setIsMenu: setIsMenu,
+        isSignUpScreen: isSignUpScreen,
+        setIsSignUpScreen: setIsSignUpScreen,
+        isSignInScreen: isSignInScreen,
+        setIsSignInScreen: setIsSignInScreen
     };
 
 

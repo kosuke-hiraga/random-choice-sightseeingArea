@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { P } from '../../components/Atoms/Typography'
 
-import { db } from '../../firebase/firebase'
+import { auth, db } from '../../firebase/firebase'
 import { collection, documentId, getDocs, query, where, collectionGroup, updateDoc, doc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import { useState, useContext, useEffect } from "react"
@@ -9,8 +9,10 @@ import { AuthContext } from '../../state/LoginProvider'
 import { testData } from '../../TestData/testData';
 import { ShightseeingData } from '../../types/SightseeingData';
 
-import { getUserData, getFavoriteData } from '../../firebase/logic';
-
+import { getUserData, getFavoriteData, logOut } from '../../firebase/logic';
+import BaseButton from '../../components/Atoms/BaseButton';
+import LoginIcon from '@mui/icons-material/Login';
+import { deleteUser, signOut } from 'firebase/auth';
 
 
 const Title = styled.div`
@@ -126,8 +128,17 @@ async function addData_sightseeing() {
             updateAt: serverTimestamp(),
         });
     })
+}
 
 
+function deleteUserAction() {
+    console.log(auth.currentUser);
+    // logOut();
+    if (auth.currentUser !== null) {
+
+        deleteUser(auth.currentUser);
+        console.log("削除完了");
+    }
 }
 
 
@@ -148,10 +159,15 @@ const PR = () => {
                 <P onClick={() => getFavoriteData("nJMhRN2XbPaWmqCHMoR9lRnrpy03")}>get favorite</P>
                 <P onClick={() => addData_sightseeing()}>addData_sightseeing</P>
 
+                <P onClick={() => deleteUserAction()}>delete user</P>
+
 
                 {/* <P onClick={() => test()}>test</P> */}
 
             </Title>
+
+            <BaseButton><LoginIcon />ログイン</BaseButton>
+
 
 
             {/* <InputArea>

@@ -7,8 +7,6 @@ const Star = (props: any) => (
     <StarIcon fontSize='large' {...props} />
 );
 const StyledStar = styled(Star)`
-
-    
     color: ${props => toBoolean(props.favorite) ? "yellow" : "#e6e7ee"};
     filter:  drop-shadow(0.5px 0.5px 0.5px #707070) 
              drop-shadow(-0.5px -0.5px 0.5px #ffffff);
@@ -33,18 +31,9 @@ const FavoriteIcon: React.FC<{
         }
         onClick(!isFavorite);
     }
-    // console.log(`starICon isFavorite: ${isFavorite} /  sightseeingID : ${sightseeingID}`);
-    // console.log(`starICon favorite: ${favorite} /  sightseeingID : ${sightseeingID}`);
-
-    // console.log(`starICon render2 ${favorite}`);
-    // console.log(sightseeingID);
-
 
     return (
-        // <StyledStar favorite={isFavorite.toString()} onClick={() => ClickedAction(onClick)} />
-        // <StyledStar favorite={isFavorite.toString()} onClick={() => ClickedAction(()=> onClick)} />
         <StyledStar favorite={isFavorite.toString()} onClick={() => ClickedAction(onClick)} />
-        // <StyledStar favorite={isFavorite.toString()} onClick={() => { unti(4)}} />
     )
 }
 

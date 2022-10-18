@@ -1,19 +1,17 @@
-import styled from "styled-components"
-import { P } from "../../components/Atoms/Typography"
-import { Button } from "@mui/material";
-import { styled as st } from "@mui/system";
-import { ShightseeingData } from "../../types/SightseeingData"
 import React, { useContext } from "react"
-import { testData } from "../../TestData/testData";
-import Device, { ViewportState } from "../../mediaQuary/config";
-import MenuIcon from '@mui/icons-material/Menu';
+import styled from "styled-components"
+import { ShightseeingData } from "../../types/SightseeingData"
 import { AuthContext } from "../../state/LoginProvider";
-import { signUp, signIn } from "../../firebase/logic";
-import { GetSightseeingData } from "../../firebase/logic";
-
+import { signUp, signIn, GetSightseeingData } from "../../firebase/logic";
 import Menu from "../Menu";
-
-import { useTest } from "../../hooks/hooks";
+import { styled as st } from "@mui/system";
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import MenuIcon from '@mui/icons-material/Menu';
+import { P } from "../../components/Atoms/Typography"
+import SignUpScreen from "../../components/Organisms/SignUpScreen";
+import SignInScreen from "../../components/Organisms/SignInScreen";
+import BaseButton from "../../components/Atoms/BaseButton";
 
 const Layout = styled.div`
     display: flex;
@@ -78,18 +76,13 @@ const SearchButtonWrap = styled.div`
     
 `
 
-const SearchButton = st(Button)`
-    background-color: #e6e7ee;
+const SearchButton = st(BaseButton)`
     width: 200px;
     height: 200px;
     border-radius: 200px;
-    box-shadow:  3px 3px 3px #cfd0d6,
-                -3px -3px 3px #fdfeff;
-    &:active{
-        box-shadow: inset 3px 3px 4px #cfd0d6,
-                    inset -3px -3px 4px #fdfeff;
-    }
 `
+
+
 
 
 const MenuWrap = styled.div`
@@ -101,7 +94,7 @@ const MenuWrap = styled.div`
 `
 
 const ButtonWrap = styled.div`
-    width: 50%;
+    /* width: 50%; */
     height: 100%;
     position: absolute;
     right: 0;
@@ -110,71 +103,85 @@ const ButtonWrap = styled.div`
     display: flex;
     align-items: center;
     justify-content: end;
+    
     gap: 10px;
 `
 
-
-const SignUpButton = st(Button)`
-    background-color: #e6e7ee;
-    width: 100px;
-    height: 50px;
-    border-radius: 10px;
-    box-shadow:  2px 2px 1px #cfd0d6,
-                -2px -2px 1px #fdfeff;
-    &:active{
-        box-shadow: inset 2px 2px 1px #cfd0d6,
-                    inset -2px -2px 1px #fdfeff;
-    }
+const SignUpButton = styled(BaseButton)`
+    display: flex;
+    justify-content: space-evenly;
+`
+const SignInButton = styled(BaseButton)`
+    display: flex;
+    justify-content: space-evenly;
+`
+const BlackDiv = styled.div`
+    background:rgba(0, 0, 0, 0.6);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
 `
 
-const SignInButton = st(SignUpButton)`
+
+const SignInScreen_EXT = styled(SignInScreen)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 20;
+`
+const SignUpScreen_EXT = styled(SignUpScreen)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 20;
 `
 
-type SearchButtonComponent = {
+
+type MainMenuHeaderComponent = {
     setSightseeingData: React.Dispatch<React.SetStateAction<ShightseeingData[]>>
     sightseeingData: ShightseeingData[];
     isBlack: boolean;
     setIsBlack: React.Dispatch<React.SetStateAction<boolean>>;
     isMenu: boolean;
-    setIsMenu: React.Dispatch<React.SetStateAction<boolean>>
+    setIsMenu: React.Dispatch<React.SetStateAction<boolean>>;
+
+    isSignUpScreen: boolean;
+    setIsSignUpScreen: React.Dispatch<React.SetStateAction<boolean>>;
+    isSignInScreen: boolean;
+    setIsSignInScreen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-const HeaderTitle: React.FC<SearchButtonComponent> = ({
+const HeaderTitle: React.FC<MainMenuHeaderComponent> = ({
     setSightseeingData,
     setIsBlack,
     isBlack,
     isMenu,
-    setIsMenu
+    setIsMenu,
+    isSignUpScreen,
+    setIsSignUpScreen,
+    isSignInScreen,
+    setIsSignInScreen
 }) => {
-
     const Auth = useContext(AuthContext);
 
-    const tt = useTest();
-
-    function Uu() {
-        const pp = useTest();
-    }
-
-    // function getShigthseeingData(num: number) {
-    //     let returnArray: Array<ShightseeingData> = [];
-    //     for (let i = 0; i < num; i++) {
-    //         returnArray.push(testData[i])
-    //     }
-    //     setSightseeingData(returnArray);
-    //     setIsBlack(true);
-
-    //     sessionStorage.setItem("previousData_at_MainMenu", JSON.stringify(returnArray));
-    //     return returnArray;
-    // }
     async function getShigthseeingData() {
         let getData = await GetSightseeingData(Math.ceil(Math.random() * 10));
         // console.log(getData);
         setIsBlack(true);
         setSightseeingData(getData);
         sessionStorage.setItem("previousData_at_MainMenu", JSON.stringify(getData));
-
     }
+
 
     return (
         <>
@@ -183,8 +190,14 @@ const HeaderTitle: React.FC<SearchButtonComponent> = ({
                     <ButtonWrap>
                         {Auth.currentUser === "logout" ?
                             <>
-                                <SignUpButton onClick={() => signUp("test@gmail.com", "ramram")}>新規登録</SignUpButton>
-                                <SignInButton onClick={() => signIn("test@gmail.com", "ramram")}>ログイン</SignInButton>
+                                <SignUpButton onClick={() => setIsSignUpScreen(true)} width={100}>
+                                    <PersonAddIcon />
+                                    新規登録
+                                </SignUpButton>
+                                <SignInButton onClick={() => setIsSignInScreen(true)} width={100}>
+                                    <LoginIcon />
+                                    ログイン
+                                </SignInButton>
                             </>
                             : <MenuIcon fontSize="large" sx={{ color: "red" }} onClick={() => setIsMenu(true)} />
                         }
@@ -204,7 +217,20 @@ const HeaderTitle: React.FC<SearchButtonComponent> = ({
                     <Menu setIsMenu={setIsMenu} setSightseeingData={setSightseeingData} setIsBlack={setIsBlack} />
                     : ""
                 }
-
+                {isSignUpScreen === true ?
+                    <>
+                        <BlackDiv onClick={() => setIsSignUpScreen(false)} />
+                        <SignUpScreen_EXT onClick={() => setIsSignUpScreen(false)} />
+                    </>
+                    : ""
+                }
+                {isSignInScreen === true ?
+                    <>
+                        <BlackDiv onClick={() => setIsSignInScreen(false)} />
+                        <SignInScreen_EXT onClick={() => setIsSignInScreen(false)} />
+                    </>
+                    : ""
+                }
             </Layout>
         </>
     )

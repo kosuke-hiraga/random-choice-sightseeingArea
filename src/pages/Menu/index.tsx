@@ -16,6 +16,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import ClearIcon from '@mui/icons-material/Clear';
 import { getFavoriteData } from "../../firebase/logic";
 
+import BaseButton from "../../components/Atoms/BaseButton";
+
 const BlackDiv = styled.div`
     background:rgba(0, 0, 0, 0.6);
     position: absolute;
@@ -30,8 +32,6 @@ const Body = styled.div`
     position: absolute;
     z-index: 20;
     right: 0%;
-
-
     width: 300px;
     height: 95%;
     background-color: #e6e7ee;
@@ -54,32 +54,28 @@ const ClearIconPosition = styled.div`
     width: 50px;
     height: 100%;
     position: relative;
-    /* background-color: gray; */
 `
 
 
-const FavoriteButton = st(Button)`
-    background-color: #e6e7ee;
-    width: 150px;
-    height: 50px;
-    border-radius: 10px;
-    box-shadow:  2px 2px 1px #cfd0d6,
-                -2px -2px 1px #fdfeff;
-    &:active{
-        box-shadow: inset 2px 2px 1px #cfd0d6,
-                    inset -2px -2px 1px #fdfeff;
-    }
+// const ClearIcon_EXT = st(ClearIcon)`
+//     position: "absolute",
+//     right: 10px,
+// `
+
+const FavoriteButton = styled(BaseButton)`
+    display: flex;
+    justify-content: space-evenly;
+`
+const LogoutButton = styled(BaseButton)`
+    display: flex;
+    justify-content: space-evenly;
 `
 
-const unti = {
+
+const sx = {
     position: "absolute",
     right: 0,
 }
-
-const LogoutButton = st(FavoriteButton)`
-`
-
-
 
 
 // const Auth = useContext(AuthContext);
@@ -106,17 +102,17 @@ const Menu: FC<{
 
     return (
         <>
-            <BlackDiv />
+            <BlackDiv onClick={() => setIsMenu(false)} />
             <Body>
                 <LoginInfo>
                     <PersonIcon />
                     <P fontSize={"small"}>{Auth.currentUser}でログイン中...</P>
                     <ClearIconPosition>
-                        <ClearIcon sx={unti} onClick={() => setIsMenu(false)} />
-                        {/* <ClearIcon /> */}
+                        <ClearIcon sx={sx} onClick={() => setIsMenu(false)} />
+                        {/* <ClearIcon_EXT onClick={() => setIsMenu(false)} /> */}
                     </ClearIconPosition>
-
                 </LoginInfo>
+
                 <FavoriteButton onClick={setFavoriteData}>
                     <StarBorderIcon />
                     お気に入り
@@ -125,6 +121,8 @@ const Menu: FC<{
                     <CloseIcon />
                     ログアウト
                 </LogoutButton>
+
+
                 {/* 下記のdivはjustfy-content: space-evenlyをうまく均等化させる為のダミーである */}
                 <div></div>
             </Body>

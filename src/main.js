@@ -16,32 +16,48 @@ import {
 
 import JestTest from "./pages/Test";
 import { TestContext, TestProvider } from "./state/TestProvider";
+import SignUpScreen from "./components/Organisms/SignUpScreen"
 
 
+const BasePath = "/build";
 
 const main = () => {
     return (
+        // <TestProvider>
+        //     <AuthProvider>
+        //         < BrowserRouter basename={BasePath}>
+        //             {/* {/* < BrowserRouter basename>/*} */}
+        //             <Routes>
+        //                 {/* <button id="getFirestoreButton" onClick={excute}>firebase get</button> */}
+        //                 {/* <input id="getID" type="text" placeholder="入力したIDでfirebase行き"></input> */}
+        //                 <Route exact path='/getFirebase' element={<GetFirebaseData />} />
+        //                 <Route exact path='/' element={<MainMenu />} />
+        //                 <Route exact path='/SightseeingData/*' element={<SightseeingData />} />
+        //                 <Route exact path='/PR' element={<PR />} />
+        //                 <Route exact path='/test' element={<JestTest />} />
+        //                 <Route exact path='/sighUp' element={<SignUpScreen />} />
+        //                 <Route path='*' element={<MainMenu />} />
+        //             </Routes>
+        //         </BrowserRouter >
+        //     </AuthProvider>
+        // </TestProvider >
+
         <TestProvider>
             <AuthProvider>
-                < BrowserRouter >
+                < BrowserRouter basename={BasePath}>
+                    {/* {/* < BrowserRouter basename>/*} */}
                     <Routes>
-                        {/* <button id="getFirestoreButton" onClick={excute}>firebase get</button> */}
-                        {/* <input id="getID" type="text" placeholder="入力したIDでfirebase行き"></input> */}
-
-                        <Route exact path='/getFirebase' element={<GetFirebaseData />} />
                         <Route exact path='/' element={<MainMenu />} />
-                        <Route exact path='/SightseeingData/*' element={<SightseeingData />} />
-                        <Route exact path='/PR' element={<PR />} />
-                        {/* <Route exact path='/PR2' element={<PR2 />} /> */}
-                        {/* <Route exact path='/test' element={<Menu />} /> */}
-
-                        <Route exact path='/test' element={<JestTest />} />
-
+                        <Route path='/index.html' element={<JestTest />} />
+                        {/* <Route exact path='/SightseeingData/*' element={<SightseeingData />} /> */}
+                        <Route path='/PR' element={<PR />} />
+                        <Route path='/test' element={<JestTest />} />
+                        {/* <Route exact path='/sighUp' element={<SignUpScreen />} /> */}
 
                     </Routes>
                 </BrowserRouter >
             </AuthProvider>
-        </TestProvider>
+        </TestProvider >
 
     );
 

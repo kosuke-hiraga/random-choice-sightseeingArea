@@ -1,11 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-
-// import { toBoolean } from "./util/util"
 import './__mocks__/matchMedia.mock.js'
 import React from "react";
-import ReactDOM from 'react-dom/client';
 import {
     render,
     unmountComponentAtNode,

@@ -6,12 +6,13 @@ const esmPackages = [
 module.exports = {
     verbose: true,
     testMatch: [
-        // "**/test/**/*.test.js"
-        "**/*.test.js"
+        "/**/*.test.js",
+        // "**/test/**/*.test.js",
+        // "**/*.test.jsx"
     ],
     transform: {
         "^.+\\.(ts|tsx)$": "ts-jest",
-        // '^.+\\.js$': 'babel-jest'
+        '^.+\\.(js|jsx)$': 'babel-jest'
     },
     testEnvironment: 'node',
     // testEnvironment: 'jsdom',

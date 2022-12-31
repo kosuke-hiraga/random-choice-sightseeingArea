@@ -2,19 +2,9 @@
  * @jest-environment jsdom
  */
 import './__mocks__/matchMedia.mock.js'
-import React from "react";
-import {
-    render,
-    unmountComponentAtNode,
-    unmount
-} from "react-dom";
 import { act } from "react-dom/test-utils";
 
-// import { getViewportState } from "../src/mediaQuary/config"
-
-
 let container = null;
-let root = null;
 
 beforeAll(() => {
     container = document.createElement("div");
@@ -27,9 +17,6 @@ afterEach(() => {
     document.body.removeChild(container);
     container = null;
 });
-
-
-
 
 
 describe("window.match", () => {

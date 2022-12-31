@@ -11,7 +11,4 @@ export type ShightseeingData = {
     isFavorited?: boolean,
     createAt?: object,
     updateAt?: object,
-    setState?: React.Dispatch<React.SetStateAction<number>>
-    // setState?: [number, React.Dispatch<React.SetStateAction<number>>]
-    // key?: number
 }

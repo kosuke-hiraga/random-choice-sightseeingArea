@@ -1,29 +1,18 @@
-import React from "react";
 import {
-    // update_SessionStorage_favrorite,
     update_firestoreFavorite
 } from "../src/firebase/logic"
 import {
     getDocs,
-    addDoc,
     query,
     where,
-    documentId,
     collection,
-    serverTimestamp,
-    doc,
-    getDoc,
     updateDoc,
 } from "firebase/firestore";
-import { db, auth, deleteApp, app } from '../src/firebase/firebase'
-// import { db, auth, getTestEnv } from '../src/firebase/firebase_TestENV'
-
+import { db, deleteApp, app } from '../src/firebase/firebase'
 import { getSessionStorage } from "../src/util/util";
 jest.mock("../src/util/util");
 
-
-
-describe.only("update_firestoreFavorite", () => {
+describe("update_firestoreFavorite", () => {
     let uid;
     let addFavoriteData;
     let removeFavoriteData;
@@ -32,7 +21,6 @@ describe.only("update_firestoreFavorite", () => {
     let q;
     beforeAll(() => {
         uid = "testUser";
-        // uid = "fake";
         addFavoriteData = ["0dDIM6FeuzJaR7jW6kGS"];
         removeFavoriteData = ["kjmVpGMeSPcThILW8xtA", "zGeGF4VMuOaCKo8UDErZ"];
         ref_collection = collection(db, "favoriteList");
@@ -89,19 +77,4 @@ describe.only("update_firestoreFavorite", () => {
         const favoriteList = newDocs.docs[0].data();
         expect(favoriteList.favorites[0].id).toBe("0dDIM6FeuzJaR7jW6kGS");
     }, 20000);
-
-    // it("対象ユーザーなし", async () => {
-    //     //お気に入り情報を初期化
-    //     // const oldDocs = await getDocs(q);
-    //     // await updateDoc(oldDocs.docs[0].ref, {
-    //     //     favorites: ["0dDIM6FeuzJaR7jW6kGS"]
-    //     // });
-    //     //firestoreお気に入り情報を更新(削除)
-    //     getSessionStorage.mockImplementation(() => addFavoriteData);
-    //     await update_firestoreFavorite("fake");
-    //     // //更新後の情報を取得
-    //     // const newDocs = await getDocs(q);
-    //     // const favoriteList = newDocs.docs[0].data();
-    //     // expect(favoriteList.favorites[0].id).toBe("0dDIM6FeuzJaR7jW6kGS");
-    // }, 20000);
 });

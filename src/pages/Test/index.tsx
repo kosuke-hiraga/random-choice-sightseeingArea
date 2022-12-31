@@ -2,154 +2,180 @@ import React, { useContext } from "react";
 import { db, auth } from "../../firebase/firebase";
 import { deleteUser } from "firebase/auth";
 
-import { TestContext } from "../../state/TestProvider";
-import { te } from "../../firebase/logic";
-
 import styled from 'styled-components'
 import axios, { AxiosInstance } from "axios"
 import { MUNI_ARRAY } from "../../util/muni"
-import { setupGetPresentLocation } from "../../util/util"
+import { addPrefectureString, getSessionStorage, setupGetPresentLocation } from "../../util/util"
 
+import { GetSightseeingData_developing, getSightseeingData_sample } from "../../firebase/logic";
+import { addDoc, collection, documentId, getDocs, limit, query, where, doc, setDoc, deleteDoc } from "firebase/firestore";
 
-const Body = styled.div`
-    display: grid;
+import * as Prefecture from "../../util/Prefecture"
+import { ScreenType, ViewportState } from "../../mediaQuary/config";
 
-    grid-template-rows: 100px 100px;
-    grid-template-columns: 100px 100px;
-    grid-template-areas: 
-        "itemA itemB" 
-        "itemC itemC"
-    ;
-
-`
-
-
-
-const ItemA = styled.div`
-    grid-area: itemA;
-    background-color: red;
-`
-
-const ItemB = styled.div`
-    grid-area: itemB;
-    background-color: blue;
-`
-
-const ItemC = styled.div`
-    grid-area: itemC;
-    background-color: green;
-`
-
+import { sampleData } from "../../TestData/sampleData";
 
 const JestTest: React.FC = () => {
-    let lat: number | undefined;
-    let lng: number | undefined;
-    let axiosTest: AxiosInstance | undefined;
 
 
-    // /**
-    //  * @desc ブラウザで位置情報取得の許可が出た時のみ、現在位置の経緯・緯度を取得する
-    //  */
-    // function setupGetPresentLocation() {
-    //     new Promise((resolve) => {
-    //         navigator.geolocation.getCurrentPosition((position) => {
-    //             let coords = position.coords;
-    //             lat = coords.latitude;
-    //             lng = coords.longitude;
-    //             resolve("");
-    //         })
-    //     }).then((result) => {
-    //         axiosTest = axios.create({
-    //             baseURL: `https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${lat}&lon=${lng}`,
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 // 'X-Requested-With': 'XMLHttpRequest',
-    //                 // "Access-Control-Allow-Origin": "*"
-    //             },
-    //             responseType: 'json'
-    //         });
-    //     }).catch(() => {
-    //         console.log("not allow");
-    //     })
-    // }
+    /**
+     * サンプルデータをfirestoreに保存する
+     */
+    function registerSampleData() {
+        console.log(sampleData);
+
+        const refCollection = collection(db, "sightseeingData");
+
+        sampleData.forEach((data) => {
+            const { id, ...rest } = data;
+            addDoc(refCollection,
+                rest
+            );
+        })
+
+    }
+
+    async function registerSampleData_indexs() {
+        //sampleデータのIDを全て取得
+        const Ids = await (async () => {
+            const refCollection = collection(db, "sightseeingData");
+            const docs = await getDocs(refCollection);
+            return docs.docs.map((doc) => {
+                return doc.id
+            });
+        })();
+
+        //取得したIDをfirestoreに保存
+        console.log(Ids);
+        const refDoc = doc(db, "sightseeingIndexs", "sample");
+        setDoc(refDoc, {
+            ids: Ids
+        });
+    }
+
+    //dbに登録するときはここを使ってね
+    // async function setIndexs(targetPrefecture: string) {
+    async function setIndexs(targetPrefectures: Array<string>) {
+
+        await Promise.all(targetPrefectures.map(async (targetPrefecture) => {
+            // console.log(targetPrefecture);
+            const Prefecture = addPrefectureString(targetPrefecture);
+
+            const refCol = collection(db, "sightseeingData");
+            const q = query(refCol, where("area", "==", Prefecture))
+            const docs = await getDocs(q);
+            const sightseeingIndexs = docs.docs.map((data) => {
+                return data.id
+            });
+            console.log(sightseeingIndexs);
+
+            const refDoc = doc(db, "sightseeingIndexs", Prefecture);
+            setDoc(refDoc, {
+                ids: sightseeingIndexs
+            });
+        })
+        );
+    }
+
+    async function searchKINKI() {
+        // const LP = addPrefectureString(Prefecture.KINKI);
+
+        let Prefectures: Array<string> = [];
+        Prefecture.KINKI.forEach((pre) => {
+            Prefectures.push(addPrefectureString(pre));
+        });
+
+        console.log(Prefectures);
+
+        const refCol = collection(db, "sightseeingData");
+        const q = query(refCol, where("area", "in", Prefectures))
+        const docs = await getDocs(q);
+        const sightseeingIndexs = docs.docs.map((data) => {
+            return data.id
+        });
+        // docs.docs.map((data) => {
+        //     deleteDoc(data.ref)
+        // });
+        console.log(sightseeingIndexs);
+    }
+
+    //dbに登録するときはここを使ってね
+    // async function setIndexs(targetPrefecture: string) {
+    async function setALLIndexs() {
+        const refCol = collection(db, "sightseeingIndexs");
+        const docs = await getDocs(refCol);
+        const sightseeingALLIndexs = docs.docs.map((data) => {
+            return data.id
+        });
+
+        console.log(sightseeingALLIndexs);
 
 
-    // //ブラウザ側で位置情報の取得を許可した場合のみ実行される    
-    // new Promise((resolve) => {
-    //     navigator.geolocation.getCurrentPosition((position) => {
-    //         let coords = position.coords;
-    //         lat = coords.latitude;
-    //         lng = coords.longitude;
-    //         resolve("");
-    //     })
-    // }).then((result) => {
-    //     axiosTest = axios.create({
-    //         baseURL: `https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${lat}&lon=${lng}`,
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             // 'X-Requested-With': 'XMLHttpRequest',
-    //             // "Access-Control-Allow-Origin": "*"
-    //         },
-    //         responseType: 'json'
-    //     });
-    // }).catch(() => {
-    //     console.log("not allow");
-    // })
+        // const GOMI = Prefecture.ZENKOKU.filter((TODOUHUKEN) => {
+        //     sightseeingALLIndexs.forEach((ALL) => {
+        //         return TODOUHUKEN === ALL
+        //     });
+        // });
+        console.log(Prefecture.ZENKOKU);
 
+        const NEW = Prefecture.ZENKOKU.map((P) => {
+            return addPrefectureString(P);
+        });
 
-    // /**
-    //  * @desc 事前取得した経緯・緯度から現在位置を取得する
-    //  * 
-    //  * @returns 
-    //  */
-    // function excuteAction() {
-    //     if (axiosTest === undefined) {
-    //         alert("機能を有効にする為には位置情報の使用を許可してください")
-    //         return
-    //     }
-    //     axiosTest.get("").then((result) => {
-    //         const muniCd = Number(result.data.results.muniCd);
-    //         console.log(getPresentLocation(muniCd));
-    //     }).catch((err) => {
-    //         console.log(err);
-    //     })
+        console.log(NEW);
 
-    // }
+        const GOMI = NEW.filter((ALL) => {
+            return sightseeingALLIndexs.indexOf(ALL) === -1
+        });
+        console.log(GOMI);
+    };
 
-    // /**
-    //  * @desc muniCdに該当する「都道府県」「市町村」「区」を返す(但し区はある場合のみ)
-    //  * @param muniCd muniCd(場所を一意に判定するコード)
-    //  * @returns 該当する都道府県、市町村、区をまとめたオブジェクトを返す。該当しない場合、アラートを表示
-    //  */
-    // function getPresentLocation(muniCd: number) {
-    //     if (muniCd in MUNI_ARRAY) {
-    //         //@ts-ignore
-    //         const parseArray = MUNI_ARRAY[muniCd].split(",");
-    //         let ward: string | undefined;
-    //         //"札幌市　北区" の様な文字列があるので、その場合は分割する
-    //         if (parseArray[3].includes("　")) {
-    //             const parseCity = parseArray[3].split("　");
-    //             //市を格納
-    //             parseArray[3] = parseCity[0];
-    //             //区を格納
-    //             ward = parseCity[1];
-    //         }
-    //         return {
-    //             Prefectures: parseArray[1], //都道府県
-    //             City: parseArray[3], //市町村
-    //             Ward: ward //区
-    //         }
-    //     } else {
-    //         alert("該当する地域なし");
-    //         return
-    //     }
-    // }
+    /**
+ * @desc スマホなら8件。 それ以外の端末は10件レコードを取得する
+ * @return 8件 or 10件のレコード
+ */
+    function extractID(Ids: Array<string>): Array<string> {
+        const numberOfExecutions = ViewportState === ScreenType.Mobile ? 8 : 10;
+        const extractIds = [];
+        for (let i = 0; i < numberOfExecutions; i++) {
+            let randomNum = Math.floor(Math.random() * Ids.length);
+            let targetId = Ids.splice(randomNum, 1).toString();
+            extractIds.push(targetId);
+        };
+        return extractIds;
+    }
+
 
     return (
         <>
-            {/* <button onClick={() => excuteAction()}>test</button> */}
             <button onClick={() => setupGetPresentLocation()}>getMuni</button>
+            <button onClick={() => {
+            }}>ALL</button>
+            <button onClick={() => {
+            }}>GetSightseeingData_developing</button>
+
+            <button onClick={() => {
+                // setIndexs("北海道");
+                // setIndexs(Prefecture.TOHOKU);
+                // setIndexs(Prefecture.KANTO); まだ登録してない
+                // setIndexs(Prefecture.TYUBU);
+                // setIndexs(Prefecture.KINKI);
+                // setIndexs(Prefecture.SHIKOKU);
+                // setIndexs(Prefecture.TYUGOKU);
+                // setIndexs(Prefecture.KYUSHU_OKINAWA);
+                setALLIndexs()
+            }}>setIndexs</button>
+
+            {/* <button onClick={() => searchKINKI()}>searchKINKI</button> */}
+            <button onClick={() => registerSampleData()}>registerSampleData</button>
+            <button onClick={() => registerSampleData_indexs()}>registerSampleData_indexs</button>
+
+
+
         </>
+
+
+
 
 
 

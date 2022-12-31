@@ -1,4 +1,3 @@
-import React from "react";
 import PasswordHiddenToggle from "./PasswordHiddenToggle";
 
 export default {

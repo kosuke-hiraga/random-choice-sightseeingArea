@@ -13,7 +13,6 @@ import Device from '../../mediaQuary/config';
 const Body = styled.div`
     width: 90%;
     max-width: 400px;
-    
     height: 350px;
     background-color: #e6e7ee;
     display: flex;
@@ -21,12 +20,11 @@ const Body = styled.div`
     justify-content: space-evenly;
     align-items: center;
     border-radius: 10px;
-    /* border: 1px solid red; */
-
     position: relative;
 `
 
 const ClearIcon_EXT = st(ClearIcon)`
+    cursor: pointer;
     top: 5px;
     right: 5px;
     position: absolute;
@@ -211,7 +209,6 @@ const SignUpScreen: React.FC<SignUpScreen> = (props) => {
                 }
             </InputPasswordArea>
 
-            {/* <SighUpButton onClick={() => actionAfterLogin(props.onClick)} disabled={(canEmail === false || canPassowrd === false)}> */}
             <SighUpButton onClick={() => actionAfterSighUp(props.onClick)} disabled={(canUserName === false || canEmail === false || canPassowrd === false)}>
                 <PersonAddIcon />
                 <P>新規作成</P>

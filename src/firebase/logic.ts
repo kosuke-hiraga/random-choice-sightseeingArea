@@ -1,32 +1,24 @@
-// import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "firebase/auth"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "firebase/auth"
 import {
     getDocs,
     addDoc,
     query,
     where,
     documentId,
-    // getFirestore,
     collection,
     serverTimestamp,
     doc,
     getDoc,
     updateDoc,
-    Firestore,
-    // deleteDoc
 } from "firebase/firestore";
-import { ShightseeingData } from "../types/SightseeingData";
-
 //@ts-ignore
 import { db, auth } from './firebase'
-// import { db as db2, getTestEnv } from "./firebase_TestENV"
-// import { db, auth, getTestEnv } from "./firebase_TestENV"
 import { User } from "../types/User";
-
-import { getSessionStorage } from "../util/util"
 import { favoriteList } from "../types/FavoriteList";
-
-
+import { ShightseeingData } from "../types/SightseeingData";
+import { getSessionStorage, addPrefectureString } from "../util/util"
+import { STORAGE_KEY } from "../util/const";
+import { ScreenType, ViewportState } from "../mediaQuary/config";
 
 /**
  * @desc 新規登録時のアクション。firestoreにユーザーとお気に入りリストの初期設定を行う
@@ -83,9 +75,7 @@ export function signUp(email: string, name: string, password: string) {
     createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
             console.log("signUp success!!");
-
             const user = userCredential.user;
-
             //何かの間違いでユーザーコレクションに保存できなかった場合、整合性を保つ為に認証情報を削除する
             await addUser(user.uid, name, email).catch(() => {
                 if (auth.currentUser !== null) {
@@ -125,14 +115,13 @@ export async function signIn(email: string, password: string): Promise<boolean> 
         .then(async (userCredential) => {
             console.log("signIn success!!");
             uid = userCredential.user.uid;
-            const user = await getUserData(uid);
             const favoriteData = await getFavoriteData(uid);
 
             const favoriteIds: Array<string> = favoriteData.map((favorite: ShightseeingData) => {
                 return favorite.id
             });
             //ログイン時にお気に入りに登録している観光地IDをセッションストレージに保持する
-            sessionStorage.setItem("favorites", JSON.stringify(favoriteIds));
+            sessionStorage.setItem(STORAGE_KEY.FAVORITES, JSON.stringify(favoriteIds));
             isSignIn = true;
         })
         .catch((error) => {
@@ -153,7 +142,9 @@ export async function signIn(email: string, password: string): Promise<boolean> 
     return isSignIn;
 }
 
-
+/**
+ * @name logOut firebaseからログアウトする
+ */
 export function logOut() {
     signOut(auth)
         .then((userCredential) => {
@@ -167,55 +158,113 @@ export function logOut() {
 
 
 /**
- * @name GetSightseeingData firestoreからレコードをランダムに最大10件取得する
+ * @name getSightseeingData_sample firestoreからレコードをランダムに最大10件取得する
  * @param numberOfRecordsYouWant 欲しいレコード数を指定(最大10件)
  * @return sightseeingData  取得したレコードを配列にして返す
  */
-export async function GetSightseeingData(numberOfRecordsYouWant: number) {
-    // const [sightseeingData, setSightseeingData] = useState();
-    console.log(numberOfRecordsYouWant);
+export async function getSightseeingData_sample() {
+    console.log("sample get");
 
-    console.log("excute");
-    const refCollection = collection(db, "sightseeingData");
-    const querySnapshot = await getDocs(refCollection);
+    //サンプルデータ取得
+    const refCollection = collection(db, "sightseeingData_sample");
+    const q = query(refCollection);
+    const docs = await getDocs(q);
 
-    //配列で返ってくるので、それぞれ取り出してあげる
-    const docIds = querySnapshot.docs.map(doc => (
-        doc.id
-    ));
-
-    //何かの間違いでレコード数より多く取得した場合エラーになるので、最大値までしか取得できない様にする
-    if (docIds.length < numberOfRecordsYouWant) {
-        numberOfRecordsYouWant = docIds.length;
-    }
-
-    // const randomNumber = Math.floor(Math.random() * querySnapshot.docs.length);
-    const extractDocIds = [];
-    for (let i = 0; i < numberOfRecordsYouWant; i++) {
-        let randomNum = Math.floor(Math.random() * docIds.length);
-        let docId = docIds.splice(randomNum, 1).toString();
-        extractDocIds.push(docId);
-    }
-
-
-    //取得したいドキュメントの情報を記載
-    // console.log(docIds[randomNumber]);
-    // const q = query(refCollection, where(documentId(), "==", docIds[randomNumber]));
-    const q = query(refCollection, where(documentId(), "in", extractDocIds));
-
-    //firestoreから情報を取得
-    const doc = await getDocs(q);
-
-    //取得した情報はそのままでは扱いずらいのでオブジェクト形式として配列に格納
-    const sightseeingData = doc.docs.map((doc) => {
+    const sightseeingData = docs.docs.map((doc) => {
         return {
-            id: doc.id,
             ...doc.data()
         } as ShightseeingData;
     });
     return sightseeingData;
 }
 
+
+/**
+ * @name GetSightseeingData_developing firestoreからレコードをランダムに取得する(スマホ:8件, それ以外10件)
+ * @param targetLocations 検索する都道府県達
+ * @return sightseeingData  取得したレコードを配列にして返す
+ * @caution firebaseのwhere句の仕様により、inには10個までしか条件を入れられない
+ */
+export async function GetSightseeingData_developing(targetLocations: Array<string>) {
+
+    //各都道府県に「〇〇県」の様に「都」「府」「県」の文字を結合する
+    targetLocations = targetLocations.map((location) => {
+        return addPrefectureString(location);
+    });
+
+    const sightseeingIndexes = await (async () => {
+        let indexs: Array<string> = [];
+        for (let i = 0; i < targetLocations.length; i++) {
+            console.log("うん");
+            const docRef = doc(db, "sightseeingIndexs", targetLocations[i]);
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                alert(`${targetLocations[i]}に対象データが存在しませんでした`)
+                continue;
+            }
+            //取得した観光地IDを 8 or 10件にランダム抽出
+            const extractIds = extractID(docSnap.data().ids);
+            indexs = indexs.concat(extractIds);
+        }
+
+        //万一1件も観光地IDが取得できなかった場合、全件検索を行う
+        if (indexs.length === 0) {
+            console.log("全件検索");
+            const refCol = collection(db, "sightseeingIndexs");
+            const docs = await getDocs(refCol);
+            const sightseeingALLIndexs = docs.docs.map((data) => {
+                return data.data();
+            });
+            let ALLIndexs: any = [];
+            for (let i = 0; i < sightseeingALLIndexs.length; i++) {
+                const extractIds = extractID(sightseeingALLIndexs[i].ids);
+                ALLIndexs = ALLIndexs.concat(extractIds);
+            }
+            indexs = ALLIndexs;
+        }
+
+        //各都道府県の観光地IDが同じ量になった状態で、もう一度ランダムに抽出したものをリターンする
+        return extractID(indexs);
+    })();
+
+
+    //全件検索の場合、たまにidを取得し切る前に観光情報の検索が始まってしまうので、ディレイをかける
+    // const delay = sightseeingIndexes.length === 0 ? 1 : 0;
+
+    console.log(sightseeingIndexes);
+
+
+
+    //firestoreから情報を取得
+    const refCollection = collection(db, "sightseeingData");
+    // console.log("検索する直前");
+    const q = query(refCollection, where(documentId(), "in", sightseeingIndexes));
+    const data = await getDocs(q);
+
+    //取得した情報はそのままでは扱いずらいのでオブジェクト形式として配列に格納
+    const sightseeingData = data.docs.map((doc) => {
+        return {
+            id: doc.id,
+            ...doc.data()
+        } as ShightseeingData;
+    });
+    return sightseeingData;
+
+    /**
+     * @desc スマホなら8件。 それ以外の端末は10件レコードを取得する
+     * @return 8件 or 10件のレコード
+     */
+    function extractID(Ids: Array<string>): Array<string> {
+        const numberOfExecutions = ViewportState === ScreenType.Mobile ? 8 : 10;
+        const extractIds = [];
+        for (let i = 0; i < numberOfExecutions; i++) {
+            let randomNum = Math.floor(Math.random() * Ids.length);
+            let targetId = Ids.splice(randomNum, 1).toString();
+            extractIds.push(targetId);
+        };
+        return extractIds;
+    }
+}
 
 
 
@@ -224,7 +273,6 @@ export async function GetSightseeingData(numberOfRecordsYouWant: number) {
  * @param uid ログインしているユーザーID
  * @return userData  検索にヒットした１番目のユーザー情報(重複しない前提)
  * @caution レコードが0件の可能性があるので、留意する事
- * 
  */
 export async function getUserData(uid: string) {
     const ref_users = collection(db, "users");
@@ -242,7 +290,6 @@ export async function getUserData(uid: string) {
  * @param user_id ログインしているユーザーID
  * @return sightseeingData  取得したレコードを配列にして返す
  * @caution レコードが0件の可能性があるので、留意する事
- * 
  */
 export async function getFavoriteData(user_id: string) {
     const ref_favoriteList = collection(db, "favoriteList");
@@ -258,7 +305,6 @@ export async function getFavoriteData(user_id: string) {
         }
     }
     return favoriteList[0].favorites as Array<ShightseeingData>;
-    // return favoriteList[0];
 }
 
 
@@ -271,7 +317,7 @@ export async function getFavoriteData(user_id: string) {
  * @returns 
  */
 export function update_SessionStorage_favrorite(targetFavroriteId: string, becomeFavorite: boolean) {
-    const sessionfavoriteIds: Array<string> = getSessionStorage("favorites");
+    const sessionfavoriteIds: Array<string> = getSessionStorage(STORAGE_KEY.FAVORITES);
     let newFavorites: Array<string> = [];
 
     //お気に入り状態になった時、対象のIDを追加した配列を作成する
@@ -293,17 +339,16 @@ export function update_SessionStorage_favrorite(targetFavroriteId: string, becom
         });
     }
 
-    sessionStorage.setItem("favorites", JSON.stringify(newFavorites));
+    sessionStorage.setItem(STORAGE_KEY.FAVORITES, JSON.stringify(newFavorites));
 }
 
 
 
 
 /**
- * firebaseの観光地IDを更新によって追加、削除する
- * 【注意!】現状、登録されていないユーザーが引数に渡るとエラーになります!
+ * firebaseの観光地IDを更新によって追加、削除する  
+ * @caution【注意!】現状、登録されていないユーザーが引数に渡るとエラーになります!
  * @param currentUser_id 現在ログインしているユーザーのid
- * @param sessionFavoriteIds セッションストレージから取得したお気に入り観光地のID達
  * @returns 
  */
 export async function update_firestoreFavorite(currentUser_id: string) {
@@ -319,7 +364,7 @@ export async function update_firestoreFavorite(currentUser_id: string) {
 
 
     //firestoreとセッションストレージのお気に入り情報の差分だけ更新の処理を行う
-    const sessionFavoriteIds: Array<string> = getSessionStorage("favorites");
+    const sessionFavoriteIds: Array<string> = getSessionStorage(STORAGE_KEY.FAVORITES);
     const newFavoriteIds: Array<string> = sessionFavoriteIds.filter((favoriteId: string) =>
         firestoreFavoriteIds.indexOf(favoriteId) == -1
     );
@@ -361,54 +406,10 @@ export async function update_firestoreFavorite(currentUser_id: string) {
                 } as ShightseeingData);
             })
         );
-        // console.log(newFavoriteData);
 
         await updateDoc(ref_favoriteData, {
             favorites: favoriteData.favorites.concat(newFavoriteData),
         });
         console.log("add finish");
     }
-}
-
-
-export function testSessionStorage() {
-    sessionStorage.setItem("testItem", JSON.stringify("test"));
-    let testItem = sessionStorage.getItem("testItem");
-
-    //セッションストレージに何も登録されていない場合、JSON.parseの処理でコケるので殻の配列を初期化しておく
-    if (testItem === null) {
-        testItem = JSON.stringify("");
-    }
-    //空の配列が上記の処理によって確約されているので!を付ける
-    const Item: string = JSON.parse(testItem!);
-
-    return Item;
-
-}
-
-
-
-
-export async function te() {
-    //     //@ts-ignore
-    // const testEnv = await getTestEnv();
-    // const alice = testEnv.authenticatedContext("H1UCHFKqD3WuBnMlYeka302pNYw2");
-    // const test = collection(alice.firestore(), "test");
-    // const test = collection(db2 as Firestore, "test");
-    const test = collection(db, "test");
-    //     console.log(test);
-
-    // addDoc(test, {
-    //     col1: "io"
-    // });
-
-    //     console.log("finish add");
-
-    const docs = await getDocs(test);
-    //     // console.log(docs);
-    //     // console.log(docs.docs);
-    const data = docs.docs.map((doc) => {
-        return doc.data();
-    });
-    console.log(data);
 }

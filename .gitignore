@@ -4,6 +4,15 @@
 /node_modules
 /.pnp
 .pnp.js
+/components/Temporary
+/firebase/firebase_TestENV.js
+/src/README_TMP.md
+/src/pages/Test
+/src/pages/test_s
+/test/__mocks__/
+/test/component.test.js/
+/test/window.test.js
+
 
 # testing
 /coverage

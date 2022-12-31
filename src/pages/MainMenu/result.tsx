@@ -1,21 +1,18 @@
-import react, { FC, ReactNode } from "react";
+import { FC } from "react";
 import styled from 'styled-components';
-import { Slider, Button } from "@mui/material";
-import { style, styled as st } from "@mui/system";
+import { Button } from "@mui/material";
+import { styled as st } from "@mui/system";
 import { P } from "../../components/Atoms/Typography"
-import { getShigthseeingData } from "../../hooks/testHooks";
 import { ShightseeingData } from "../../types/SightseeingData"
 import ReplayIcon from '@mui/icons-material/Replay';
 import CloseIcon from '@mui/icons-material/Close';
-import Device from "../../mediaQuary/config";
-import { GetSightseeingData } from "../../firebase/logic";
-
+import { GetSightseeingData_developing } from "../../firebase/logic";
+import { getSessionStorage } from "../../util/util";
+import { STORAGE_KEY } from "../../util/const";
 
 
 const BlackDiv = styled.div`
-    /* background-color: black; */
     background:rgba(0, 0, 0, 0.6);
-    /* opacity: 0.5; */
     position: absolute;
     top: 0;
     left: 0;
@@ -23,14 +20,11 @@ const BlackDiv = styled.div`
     height: 100%;
     z-index: 11;
 `
-
 const Body = styled.div`
     width: 90%;
     height: 90%;
     display: flex;
     flex-direction: column;
-
-    /* background-color: #e6e7ee; */
     background-color: rgba(230, 231, 238, 0.8);
     border-radius: 40px;
     position: absolute;
@@ -39,18 +33,12 @@ const Body = styled.div`
     right: 5%;
     z-index: 12;
 `
-
 const ResultAreaWrap = styled.div`
     display: grid;
     place-items: center;
-    /* padding-top: 10px; */
     margin: 0 auto;
     width: 95%;
     height: 80%;
-    //380pxあたりで再検索ボタンと閉じるボタンが重なるのでそれを防ぐ
-    @media (max-width: 380px){
-        height: 70%;
-    }
 `
 
 const ResultArea = styled.div`
@@ -65,66 +53,50 @@ const ResultArea = styled.div`
     box-shadow: inset 3px 4px 6px #707070,
                 inset -1px -1px 4px #ffffff;
     scrollbar-width: none; //firefox用
-
-
     &::-webkit-scrollbar { 
         display: none; //Chrome・Safari・Microsoft Edge用
     }
-    
     //検索結果同士の間隔を少し開ける
     > :nth-child(n){
         margin: 10px 10px;
     }
-    @media ${Device.mobile}{
+    @media (max-width: 519px){
         display: grid;
-    }
-    @media (max-width: 520px){
         grid-template-columns: 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         place-items: center;
     }
-    @media (min-width: 521px) and (max-width: 600px){
+    @media (min-width: 520px) and (max-width: 600px){
         grid-template-columns: repeat(auto-fit, 220px);
     }
 `
-
-
 const SearchButtonWrap = styled.div`
     height: 20%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-    //380pxあたりで再検索ボタンと閉じるボタンが重なるのでそれを防ぐ
-    @media (max-width: 380px){
-        height: 30%;
-        flex-direction: column;
-    }
 `
 
-const SearchButton = st(Button)`
+const ButtonBase = st(Button)`
     display: flex;
-    // flex-direction: space-evenly;
     justify-content: space-evenly;
     width: 150px;
-    // width: 400px;
     height: 50px;
     border-radius: 42px;
-    // box-shadow:  3px 3px 3px #cfd0d6,
-    //             -3px -3px 3px #fdfeff;
     box-shadow:  2px 3px 3px #707070,
                  -2px -2px 4px #ffffff;
     &:active{
         box-shadow: inset 3px 3px 4px #cfd0d6,
                     inset -3px -3px 4px #fdfeff;
     }
+    @media (max-width: 380px){
+        width: 100px;
+    }
 `
+const SearchButton = styled(ButtonBase)``
+const CloseButton = styled(ButtonBase)``
 
-
-
-// const result: FC<ReactNode> = ({ children }) => {
-// const result: FC<ReactNode> = (props) => {
-// const result = (props: any, {isBlack: boolean, setIsBlack: any}) => {
 const result: FC<{
     isBlack: boolean;
     setIsBlack: React.Dispatch<React.SetStateAction<boolean>>;
@@ -133,9 +105,10 @@ const result: FC<{
 }> = ({ isBlack, setIsBlack, children, setSightseeingData }) => {
 
     async function reSearch() {
-        let getData = await GetSightseeingData(Math.ceil(Math.random() * 10));
-        // console.log(getData);
+        const Prefectures = getSessionStorage(STORAGE_KEY.PUSHED_PREFECTURE_BUTTON);
+        const getData = await GetSightseeingData_developing(Prefectures);
         setSightseeingData(getData);
+        sessionStorage.setItem(STORAGE_KEY.PREVIOUSDATA_AT_MAINMENU, JSON.stringify(getData));
     }
 
     return (
@@ -149,18 +122,15 @@ const result: FC<{
                 </ResultAreaWrap>
                 <SearchButtonWrap>
                     <SearchButton onClick={() => reSearch()}>
-                        {/* <SearchButton> */}
                         <ReplayIcon />
                         <P>再検索</P>
                     </SearchButton>
-
-                    <SearchButton onClick={() => setIsBlack(!isBlack)}>
+                    <CloseButton onClick={() => setIsBlack(!isBlack)}>
                         <CloseIcon />
                         <P>閉じる</P>
-                    </SearchButton>
+                    </CloseButton >
                 </SearchButtonWrap>
             </Body>
-
         </>
     )
 };

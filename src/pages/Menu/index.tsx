@@ -1,22 +1,15 @@
-import React, { FC, useContext, useState } from "react"
-import { Button } from "@mui/material";
+import React, { FC, useContext } from "react"
 import styled from 'styled-components'
-import { styled as st } from "@mui/system";
 import { P } from "../../components/Atoms/Typography";
-import { ViewportState } from "../../mediaQuary/config";
 import { ShightseeingData } from "../../types/SightseeingData"
-
 import { AuthContext } from '../../state/LoginProvider'
-import { logOut } from "../../firebase/logic";
-
-
+import { getFavoriteData, logOut } from "../../firebase/logic";
 import CloseIcon from '@mui/icons-material/Close';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import PersonIcon from '@mui/icons-material/Person';
 import ClearIcon from '@mui/icons-material/Clear';
-import { getFavoriteData } from "../../firebase/logic";
-
 import BaseButton from "../../components/Atoms/BaseButton";
+import { STORAGE_KEY } from "../../util/const";
 
 const BlackDiv = styled.div`
     background:rgba(0, 0, 0, 0.6);
@@ -27,7 +20,6 @@ const BlackDiv = styled.div`
     height: 100%;
     z-index: 10;
 `
-
 const Body = styled.div`
     position: absolute;
     z-index: 20;
@@ -35,14 +27,12 @@ const Body = styled.div`
     width: 300px;
     height: 95%;
     background-color: #e6e7ee;
-    /* background-color: red; */
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
 `
-
 const LoginInfo = styled.div`
     width: 100%;
     height: 50px;   
@@ -55,13 +45,6 @@ const ClearIconPosition = styled.div`
     height: 100%;
     position: relative;
 `
-
-
-// const ClearIcon_EXT = st(ClearIcon)`
-//     position: "absolute",
-//     right: 10px,
-// `
-
 const FavoriteButton = styled(BaseButton)`
     display: flex;
     justify-content: space-evenly;
@@ -70,33 +53,23 @@ const LogoutButton = styled(BaseButton)`
     display: flex;
     justify-content: space-evenly;
 `
-
-
 const sx = {
+    cursor: "pointer",
     position: "absolute",
     right: 0,
 }
-
-
-// const Auth = useContext(AuthContext);
-// async function reSearch() {
-//     let getData = await GetSightseeingData(Math.ceil(Math.random() * 10));
-//     // console.log(getData);
-//     setSightseeingData(getData);
-// }
-
 
 const Menu: FC<{
     setIsMenu: React.Dispatch<React.SetStateAction<boolean>>,
     setSightseeingData: React.Dispatch<React.SetStateAction<ShightseeingData[]>>,
     setIsBlack: React.Dispatch<React.SetStateAction<boolean>>
 }> = ({ setIsMenu, setSightseeingData, setIsBlack }) => {
+
     const Auth = useContext(AuthContext);
-
-
     async function setFavoriteData() {
         let getData = await getFavoriteData(Auth.currentUser);
         setIsBlack(true);
+        sessionStorage.setItem(STORAGE_KEY.PREVIOUSDATA_AT_MAINMENU, JSON.stringify(getData));
         setSightseeingData(getData);
     }
 
@@ -105,14 +78,12 @@ const Menu: FC<{
             <BlackDiv onClick={() => setIsMenu(false)} />
             <Body>
                 <LoginInfo>
-                    <PersonIcon />
+                    <PersonIcon sx={{ cursor: "pointer" }} />
                     <P fontSize={"small"}>{Auth.currentUser}でログイン中...</P>
                     <ClearIconPosition>
                         <ClearIcon sx={sx} onClick={() => setIsMenu(false)} />
-                        {/* <ClearIcon_EXT onClick={() => setIsMenu(false)} /> */}
                     </ClearIconPosition>
                 </LoginInfo>
-
                 <FavoriteButton onClick={setFavoriteData}>
                     <StarBorderIcon />
                     お気に入り
@@ -121,7 +92,6 @@ const Menu: FC<{
                     <CloseIcon />
                     ログアウト
                 </LogoutButton>
-
 
                 {/* 下記のdivはjustfy-content: space-evenlyをうまく均等化させる為のダミーである */}
                 <div></div>

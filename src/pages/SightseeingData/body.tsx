@@ -1,29 +1,28 @@
-import styled from 'styled-components'
-import { style, styled as st } from "@mui/system";
-// import NO_IMAGE from "../../img/NO_IMAGE.png";
-
+import styled, { keyframes } from 'styled-components'
+import { styled as st } from "@mui/system";
 import NO_IMAGE from "../../img/NO_IMAGE.png";
-// const NO_IMAGE = require("../../img/NO_IMAGE.png")
-
-
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import PlaceIcon from '@mui/icons-material/Place';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import CurrencyYenIcon from '@mui/icons-material/CurrencyYen';
 import Device, { ViewportState } from "../../mediaQuary/config";
 import { P } from "../../components/Atoms/Typography";
-// import { ShigtseeingData } from "./index"
 import { ShightseeingData } from "../../types/SightseeingData"
 
-let IconSize: "small" | "inherit" | "large" | "medium" | undefined;
-switch (ViewportState) {
-    case "mobile":
-        IconSize = "small"; break;
-    case "tablet":
-        IconSize = "large"; break;
-    case "laptop":
-        IconSize = "large"; break;
-}
+
+const IconSize = (() => {
+    let IconSize: "small" | "inherit" | "large" | "medium" | undefined;
+    switch (ViewportState) {
+        case "mobile":
+            IconSize = "small"; break;
+        case "tablet":
+            IconSize = "large"; break;
+        case "laptop":
+            IconSize = "large"; break;
+    }
+    return IconSize;
+})();
+
 
 const Hole = styled.div`
     width: 60px;
@@ -48,14 +47,13 @@ const InfoWrapper = styled.div`
         display: none; //Chrome・Safari・Microsoft Edge用
     }
     width: 100%;
-    /* height: 450px; */
     height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* grid-gap: 10px 20px; */
     @media ${Device.mobile}, ${Device.tablet}{
         grid-template-columns: unset;
         grid-template-rows: 1fr 1fr 1fr;
+        grid-gap: 10px;
     }
 `
 
@@ -70,22 +68,38 @@ const ImgWrapper = styled.div`
     height: 100%;
     border-radius: 40px;
     margin: 0 auto;
+    
     @media ${Device.mobile}, ${Device.tablet}{
-        width: 90%;
-        height: 90%;
         grid-row: 2;
         grid-column:1;
     }
-    
 `
-const Img = styled.img`
+const fade = keyframes`
+    0%   { opacity: 0; }
+    50%  { opacity: 1; }
+    100% { opacity: 0; }
+`
+const IMGPosition = styled.div`
+    position: relative;
     width: 95%;
-    height: 95%;
-    max-height: 500px;
-    display: block;
+    height: calc((200px + ((10vw) * 2)) * 0.8);
+    max-width: 600px;
+    max-height: 400px;
     border-radius: 40px;
 `
-
+const IMGBase = styled.img`
+    position: absolute;
+    width: 95%;
+    height: 100%;
+    max-height: 400px;
+    border-radius: 40px;
+    opacity: 0;
+    animation: ${fade} 6s infinite;
+`
+const IMG1 = styled(IMGBase)``
+const IMG2 = styled(IMGBase)`
+    animation-delay: 3s;
+`
 const SightseeingInfoWrapper = styled.div`
     grid-area: sightseeingInfo;
     grid-row: 1;
@@ -102,11 +116,9 @@ const SightseeingInfoWrapper = styled.div`
     }
 
 `
-
 const SightseeingInfo_base = styled.div`
     display: flex;
     align-items: center;
-    /* text-shadow: 1px 1px 1px rgba(230, 231, 238. 0.1); */
     @media ${Device.tablet}, ${Device.laptop}{
         > :nth-Child(2){
             display: flex;
@@ -118,14 +130,10 @@ const SightseeingInfo_base = styled.div`
     }
 `
 
-const Explanation = st(SightseeingInfo_base)`
-`
-const SightseeingInfo_address = st(SightseeingInfo_base)`
-`
-const SightseeingInfo_access = st(SightseeingInfo_base)`
-`
-const SightseeingInfo_price = st(SightseeingInfo_base)`
-`
+const Explanation = st(SightseeingInfo_base)``
+const SightseeingInfo_address = st(SightseeingInfo_base)``
+const SightseeingInfo_access = st(SightseeingInfo_base)``
+const SightseeingInfo_price = st(SightseeingInfo_base)``
 
 const SubTitle = styled.div`
     grid-row: 1;
@@ -133,17 +141,13 @@ const SubTitle = styled.div`
     width: 95%;
     margin: 10px auto 10px;
     font-weight: bold;
-    /* margin-bottom: 15px; */
     p{
-        /* width: 95%; */
         font-size: 14px;
     }
 `
 const SubTitleSX = {
-    // borderBottom: "1px solid"
     borderBottom: window.matchMedia(Device.laptop).matches ? "1px solid" : "",
 }
-
 
 const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
     //画像がない場合、画像を差し替える
@@ -158,11 +162,14 @@ const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
             {ViewportState === "laptop" ? "" :
                 <SubTitle>
                     <P variant="inherit" sx={SubTitleSX}>{props.subTitle}</P>
-                    {/* <P variant="inherit" sx={SubTitleSX}>wwwww</P> */}
                 </SubTitle>
             }
             <ImgWrapper >
-                <Img alt={props.imgs[0]} src={props.imgs[0]}></Img>
+                <IMGPosition>
+                    <IMG1 src={props.imgs[0]!} />
+                    <IMG2 src={props.imgs[1]!} />
+                </IMGPosition>
+
             </ImgWrapper>
             <SightseeingInfoWrapper>
                 <Explanation>
@@ -174,7 +181,6 @@ const ShightseeingInfoBody: React.FC<ShightseeingData> = (props) => {
                 </Explanation>
                 <SightseeingInfo_address>
                     {ViewportState === "mobile" ? "" : <Hole><PlaceIcon fontSize={IconSize} /></Hole>}
-                    {/* {window.matchMedia(Device.mobile).matches ? "" : <Hole><PlaceIcon fontSize={IconSize} /></Hole>} */}
                     <div>
                         <P>{"【住所】"}</P>
                         <P>{props.address}</P>

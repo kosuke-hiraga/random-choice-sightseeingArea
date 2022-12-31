@@ -7,25 +7,11 @@ import FourthIMG from "./../../img/skytree.jpeg"
 import FifthIMG from "./../../img/umeda_sky_building.jpeg"
 
 const fade = keyframes`
-    0% {
-        opacity: 0;
-    }
-
-    5% {
-        opacity: 1;
-    }
-
-    25% {
-        opacity: 1;
-    }
-
-    30% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
-    }
+    0% {opacity:   0;}
+    5% {opacity:   1;}
+    25% {opacity:  1;}
+    30% {opacity:  0;}
+    100% {opacity: 0;}
 `
 
 const Background = styled.div`
@@ -33,9 +19,6 @@ const Background = styled.div`
     height: 100vh;
     animation-name: ${fade};
     position: relative;
-    /* position: absolute; */
-    /* top: 0;
-    left: 0; */
     z-index: 1;   
 `
 const IMGBase = styled.div`
@@ -82,6 +65,5 @@ const BackgroundImg = () => {
         </Background>
     )
 }
-
 
 export default BackgroundImg;

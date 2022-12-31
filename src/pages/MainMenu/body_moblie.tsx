@@ -1,8 +1,7 @@
 import styled from 'styled-components'
-import { P } from '../../components/Atoms/Typography'
-import FirstIMG from "./../../img/hitachi_seaside_park.jpeg"
 import { ShightseeingData } from "../../types/SightseeingData"
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { P } from '../../components/Atoms/Typography'
 import FavoriteIcon from "../../components/Atoms/FavoriteIcon"
 import { useContext } from "react"
 import { AuthContext } from "../../state/LoginProvider"
@@ -11,29 +10,27 @@ import {
     update_SessionStorage_favrorite,
     update_firestoreFavorite
 } from "../../firebase/logic"
+import NO_IMAGE from "../../img/NO_IMAGE.png";
+import { STORAGE_KEY } from '../../util/const'
 
 
 const CardWrap = styled.div`
     position: relative;
 `
 const Card = styled.div`
-    max-width: 200px;
-    /* max-height: 80px; */
+    width: 230px;
     height: 70px;
     display: flex;
     border-bottom: 1px solid;
 `
-
 const ImgWrap = styled.div`
     width: 35%;
     display: grid;
     place-items: center;
 `
-
 const Img = styled.img`
     width: 95%;
     height: 95%;
-    
 `
 const Title = styled.div`
     width: 50%; 
@@ -48,7 +45,6 @@ const FavoriteIconPosition = styled.div`
     position: absolute;
     top: 10px;
     right: 0px;
-
     display: flex;
     align-items: center;
 `
@@ -57,19 +53,19 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
     const navigate = useNavigate();
     const Auth = useContext(AuthContext);
 
+    for (let i = 0; i < 2; i++) {
+        if (typeof props.imgs[i] === 'undefined') {
+            props!.imgs[i] = NO_IMAGE;
+        }
+    }
+
     return (
-        // <CardWrap
-        //     onClick={() => {
-        //         sessionStorage.setItem("isBlack", "true")
-        //         navigate(`./SightseeingData/${props.id}`, { state: props })
-        //     }}>
         <CardWrap>
             <Card onClick={() => {
-                sessionStorage.setItem("isBlack", "true")
+                sessionStorage.setItem(STORAGE_KEY.IS_BLACK, "true")
                 navigate(`./SightseeingData/${props.id}`, { state: props })
             }}>
                 <ImgWrap>
-                    {/* <Img src={FirstIMG}></Img> */}
                     <Img src={props.imgs[0]}></Img>
                 </ImgWrap>
                 <Title>
@@ -78,7 +74,6 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
             </Card>
             {Auth.isSighIn() === true ?
                 <FavoriteIconPosition>
-                    {/* <FavoriteIcon favorite={isFavorite(props.id)} /> */}
                     <FavoriteIcon
                         favorite={isFavorite(props.id)}
                         sightseeingID={props.id}
@@ -90,7 +85,6 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
                 : ""}
         </CardWrap>
     )
-
 }
 
 export default SightseeingCard;

@@ -12,9 +12,10 @@ import {
     validateUserName,
     checkErrorContentUserName,
     getPresentLocation,
-
-    axtest
-} from "./util"
+    addPrefectureString,
+    update_SessionStorage_pushedPrefectureButton
+} from "./util";
+import { STORAGE_KEY } from "../util/const"
 
 describe("util テスト", () => {
     test("toBoolean true → true", () => {
@@ -56,7 +57,7 @@ describe("util テスト", () => {
 
 describe("isFavorite テスト", () => {
     beforeAll(() => {
-        sessionStorage.setItem("favorites", JSON.stringify(["id1", "id2", "id3"]));
+        sessionStorage.setItem(STORAGE_KEY.FAVORITES, JSON.stringify(["id1", "id2", "id3"]));
     });
     afterAll(() => {
         sessionStorage.clear();
@@ -334,9 +335,65 @@ describe("getPresentLocation テスト", () => {
     });
 });
 
-describe.only("axtest", () => {
-    test("axtest", () => {
-        const loca = axtest();
-        console.log(loca);
+
+describe("addPrefectureString テスト", () => {
+    test("東京 → 東京都", () => {
+        const Prefecture = "東京";
+        const newPrefecture = addPrefectureString(Prefecture);
+        expect(newPrefecture).toBe(Prefecture + "都");
+    });
+    test("京都 → 京都府", () => {
+        const Prefecture = "京都";
+        const newPrefecture = addPrefectureString(Prefecture);
+        expect(newPrefecture).toBe(Prefecture + "府");
+    });
+    test("大阪  →大阪府", () => {
+        const Prefecture = "大阪";
+        const newPrefecture = addPrefectureString(Prefecture);
+        expect(newPrefecture).toBe(Prefecture + "府");
+    });
+    test("北海道→ 北海道", () => {
+        const Prefecture = "北海道";
+        const newPrefecture = addPrefectureString(Prefecture);
+        expect(newPrefecture).toBe(Prefecture);
+    });
+    test("埼玉  → 埼玉県", () => {
+        const Prefecture = "埼玉";
+        const newPrefecture = addPrefectureString(Prefecture);
+        expect(newPrefecture).toBe(Prefecture + "県");
     });
 });
+
+
+describe("update_SessionStorage_pushedPrefectureButton テスト", () => {
+    //テスト開始前に一応初期化
+    beforeAll(() => {
+        sessionStorage.clear();
+    });
+    afterEach(() => {
+        sessionStorage.clear();
+    });
+    test("北海道 沖縄 追加", () => {
+        update_SessionStorage_pushedPrefectureButton("北海道", true);
+        update_SessionStorage_pushedPrefectureButton("沖縄", true);
+        const PUSHED_PREFECTURE_BUTTON = getSessionStorage(STORAGE_KEY.PUSHED_PREFECTURE_BUTTON);
+        expect(PUSHED_PREFECTURE_BUTTON[0]).toBe("北海道");
+        expect(PUSHED_PREFECTURE_BUTTON[1]).toBe("沖縄");
+    });
+    test("重複時 処理中断", () => {
+        update_SessionStorage_pushedPrefectureButton("北海道", true);
+        update_SessionStorage_pushedPrefectureButton("北海道", true);
+        const PUSHED_PREFECTURE_BUTTON = getSessionStorage(STORAGE_KEY.PUSHED_PREFECTURE_BUTTON);
+        expect(PUSHED_PREFECTURE_BUTTON.length).toBe(1);
+    });
+    test("北海道 追加後 削除", () => {
+        update_SessionStorage_pushedPrefectureButton("北海道", true);
+        update_SessionStorage_pushedPrefectureButton("沖縄", true);
+        update_SessionStorage_pushedPrefectureButton("東京", true);
+        update_SessionStorage_pushedPrefectureButton("北海道", false);
+        const PUSHED_PREFECTURE_BUTTON = getSessionStorage(STORAGE_KEY.PUSHED_PREFECTURE_BUTTON);
+        expect(PUSHED_PREFECTURE_BUTTON[0]).not.toBe("北海道");
+        expect(PUSHED_PREFECTURE_BUTTON[0]).toBe("沖縄");
+        expect(PUSHED_PREFECTURE_BUTTON[1]).toBe("東京");
+    });
+})

@@ -130,6 +130,40 @@ async function addData_sightseeing() {
     })
 }
 
+//使い捨て　
+async function addData_sightseeing_subCollection() {
+    const ref_favoriteList = collection(db, "sightseeingData");
+    const q = query(ref_favoriteList);
+    const doc = await getDocs(q);
+
+    doc.docs.map(async (doc) => {
+
+        const unti = collection(doc.ref, "")
+
+
+    })
+
+    const favoriteList: Array<ShightseeingData> = [];
+    favoriteList.push(testData[1]);
+    favoriteList.push(testData[2]);
+    favoriteList.push(testData[3]);
+
+    favoriteList.forEach((data) => {
+        addDoc(ref_favoriteList, {
+            title: data.title,
+            subTitle: data.subTitle,
+            access: data.access,
+            address: data.access,
+            area: data.area,
+            explanation: data.explanation,
+            imgs: data.imgs,
+            price: data.price,
+            createAt: serverTimestamp(),
+            updateAt: serverTimestamp(),
+        });
+    })
+}
+
 
 function deleteUserAction() {
     console.log(auth.currentUser);

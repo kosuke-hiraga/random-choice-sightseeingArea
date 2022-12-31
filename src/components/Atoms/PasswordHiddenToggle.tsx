@@ -1,31 +1,27 @@
-import styled from 'styled-components'
 import React, { useState } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-type PasswordHiddenToggle = {
-    onClick?: any
+
+type PasswordHiddenToggleType = {
+    onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
 }
 
-const PasswordHiddenToggle: React.FC<PasswordHiddenToggle> = ({ onClick }) => {
+const PasswordHiddenToggle: React.FC<PasswordHiddenToggleType> = ({ onClick }) => {
     const [isToggle, setIsToggle] = useState(false);
 
-    function clickedAction(onClick: any) {
+    function clickedAction(onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void) {
         setIsToggle(!isToggle);
-        if (onClick === undefined) {
-            console.log("not function");
-            return;
-        }
+        if (onClick === undefined) return;
         onClick();
     }
 
     return (
         <>
             {isToggle === true ?
-                <VisibilityIcon onClick={() => clickedAction(onClick)} /> :
-                <VisibilityOffIcon onClick={() => clickedAction(onClick)} />
+                <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => clickedAction(onClick)} /> :
+                <VisibilityOffIcon sx={{ cursor: "pointer" }} onClick={() => clickedAction(onClick)} />
             }
-
         </>
     )
 }

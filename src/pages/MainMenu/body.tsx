@@ -1,7 +1,7 @@
 import styled from "styled-components"
-import { P } from "../../components/Atoms/Typography"
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { ShightseeingData } from "../../types/SightseeingData"
+import { P } from "../../components/Atoms/Typography"
 import FavoriteIcon from "../../components/Atoms/FavoriteIcon"
 import { useContext } from "react"
 import { AuthContext } from "../../state/LoginProvider"
@@ -10,6 +10,8 @@ import {
     update_SessionStorage_favrorite,
     update_firestoreFavorite
 } from "../../firebase/logic"
+import NO_IMAGE from "../../img/NO_IMAGE.png";
+import { STORAGE_KEY } from "../../util/const"
 
 const SightseeingImgWrapper = styled.div`
     width: 100%;
@@ -20,29 +22,21 @@ const SightseeingImg = styled.img`
     width: 100%;
     height: 100%;
 `
-
 const CircleWrap = styled.div`
     position: relative;
 `
 const Circle = styled.div`
     width: 150px;
     height: 150px;
-
-    
-
-    /* border: #cfd0d6 solid 5px; */
     border-top: #cfd0d6 solid 2px;
     border-left: #cfd0d6 solid 1px;
     border-radius: 150px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* box-shadow:  1px 4px 3px #cfd0d6,
-                -2px -2px 3px #fdfeff; */
     box-shadow:  2px 3px 5px #707070,
                  -2px -2px 5px #ffffff;
     margin: 10px;
-
     :hover{
         ${SightseeingImg}{
             position: absolute;
@@ -56,10 +50,8 @@ const Circle = styled.div`
 `
 const SightseeingTitle = styled.div`
     height: 30%;
-    /* background-color: #e6e7ee; */
     background-color: rgba(230, 231, 238, 0.4);
     text-align: center;
-    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,7 +66,6 @@ const FavoriteIconPosition = styled.div`
     right: 20px;
 `
 
-
 const SightseeingCard: React.FC<ShightseeingData> = (props) => {
     const navigate = useNavigate();
     const Auth = useContext(AuthContext);
@@ -84,12 +75,17 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
         second: props.title.substring(13, 24),
         third: props.title.substring(24, 32)
     }
-    // console.log(`観光地　レンダリング +  ${props.id}`);
+    //画像がない場合、画像を差し替える
+    for (let i = 0; i < 2; i++) {
+        if (typeof props.imgs[i] === 'undefined') {
+            props!.imgs[i] = NO_IMAGE;
+        }
+    }
 
     return (
         <CircleWrap>
             <Circle onClick={() => {
-                sessionStorage.setItem("isBlack", "true")
+                sessionStorage.setItem(STORAGE_KEY.IS_BLACK, "true")
                 navigate(`./SightseeingData/${props.id}`, { state: props })
             }} >
                 <SightseeingImgWrapper>
@@ -116,6 +112,4 @@ const SightseeingCard: React.FC<ShightseeingData> = (props) => {
         </CircleWrap>
     )
 }
-
-
 export default SightseeingCard

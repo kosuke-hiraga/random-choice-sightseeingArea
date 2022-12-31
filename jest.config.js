@@ -15,7 +15,6 @@ module.exports = {
         '^.+\\.(js|jsx)$': 'babel-jest'
     },
     testEnvironment: 'node',
-    // testEnvironment: 'jsdom',
     // preset: "ts-jest"
     // preset: "ts-jest/presets/js-with-ts"
     preset: "ts-jest/presets/js-with-babel",

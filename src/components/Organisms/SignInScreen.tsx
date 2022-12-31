@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import React, { useState } from 'react';
 import { signIn } from "../../firebase/logic";
-import Input from "../Atoms/Input";
 import BaseButton from '../Atoms/BaseButton';
 import { P } from '../Atoms/Typography';
 import PasswordHiddenToggle from "../Atoms/PasswordHiddenToggle"
@@ -21,10 +20,10 @@ const Body = styled.div`
     justify-content: space-evenly;
     align-items: center;
     border-radius: 10px;
-    /* border: 1px solid red; */
 `
 
 const ClearIcon_EXT = st(ClearIcon)`
+    cursor: pointer;
     top: 5px;
     right: 5px;
     position: absolute;
@@ -123,7 +122,6 @@ const SignInScreen: React.FC<SignInScreen> = (props) => {
     }
 
     return (
-        // <Body {...props}>
         <Body className={props.className}>
             {/*props.onClick()は setIsSignInScreen(false)の想定 */}
             <ClearIcon_EXT onClick={() => props.onClick()} />

@@ -1,6 +1,3 @@
-import React from "react";
-import { styled as st } from "@mui/system";
-import ButtonMUI from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 
@@ -27,13 +24,6 @@ export const severalVariants = () => (
         <Typography variant="overline">{`overline: ${showString}`}</Typography>
         <Typography variant="subtitle1">{`subtitle1: ${showString}`}</Typography>
         <Typography variant="subtitle2">{`subtitle1: ${showString}`}</Typography>
-         <Typography variant="string">{`string: ${showString}`}</Typography>
+        <Typography variant="string">{`string: ${showString}`}</Typography>
     </>
 )
-
-
-// export const unti = () => (
-//     {{}}
- 
-
-// )
